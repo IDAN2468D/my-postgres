@@ -20,7 +20,10 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - app-network
+      app-network:
+        aliases:
+          - postgres
+          - my-postgres
 
   # 2. Redis 7 In-Memory Cache & Event Bus
   redis:
@@ -35,7 +38,10 @@ services:
       timeout: 3s
       retries: 5
     networks:
-      - app-network
+      app-network:
+        aliases:
+          - redis
+          - my-redis
 
   # 3. Python FastAPI AI Analytics & Currency Microservice
   analytics-service:
@@ -47,7 +53,7 @@ services:
     restart: unless-stopped
     environment:
       PORT: 5002
-      PGHOST: postgres
+      PGHOST: my-postgres
       PGPORT: 5432
       PGDATABASE: ${POSTGRES_DB:-mydb}
       PGUSER: ${POSTGRES_USER:-postgres}
@@ -70,8 +76,8 @@ services:
     restart: unless-stopped
     environment:
       PORT: 5003
-      REDIS_URL: redis://redis:6379
-      PGHOST: postgres
+      REDIS_URL: redis://my-redis:6379
+      PGHOST: my-postgres
       PGPORT: 5432
       PGDATABASE: ${POSTGRES_DB:-mydb}
       PGUSER: ${POSTGRES_USER:-postgres}
@@ -96,14 +102,14 @@ services:
     restart: unless-stopped
     environment:
       PORT: 5004
-      PGHOST: postgres
+      PGHOST: my-postgres
       PGPORT: 5432
       PGDATABASE: ${POSTGRES_DB:-mydb}
       PGUSER: ${POSTGRES_USER:-postgres}
       PGPASSWORD: ${POSTGRES_PASSWORD:-password}
-      WEBAPP_URL: http://webapp:5001
-      ANALYTICS_URL: http://analytics-service:5002
-      EVENTS_URL: http://events-service:5003
+      WEBAPP_URL: http://my-webapp:5001
+      ANALYTICS_URL: http://my-analytics-service:5002
+      EVENTS_URL: http://my-events-service:5003
     ports:
       - "5004:5004"
     depends_on:
@@ -122,14 +128,14 @@ services:
     restart: unless-stopped
     environment:
       PORT: 5001
-      PGHOST: postgres
+      PGHOST: my-postgres
       PGPORT: 5432
       PGDATABASE: ${POSTGRES_DB:-mydb}
       PGUSER: ${POSTGRES_USER:-postgres}
       PGPASSWORD: ${POSTGRES_PASSWORD:-password}
-      ANALYTICS_URL: http://analytics-service:5002
-      EVENTS_URL: http://events-service:5003
-      MCP_URL: http://mcp-server:5004
+      ANALYTICS_URL: http://my-analytics-service:5002
+      EVENTS_URL: http://my-events-service:5003
+      MCP_URL: http://my-mcp-server:5004
     ports:
       - "5001:5001"
     depends_on:

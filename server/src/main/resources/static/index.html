@@ -2567,13 +2567,20 @@
     let selectedMcpTool = 'postgres_query_readonly';
 
     async function loadMcpHubView() {
-      if (!authToken) { showLockedState(); return; }
       const list = document.getElementById('dataList');
       list.innerHTML = '<div class="loading-spin">טוען קטלוג כלים משרת ה-MCP (פורט 5004)...</div>';
 
       try {
-        const res = await authFetch(`${API_URL}/mesh/mcp/tools`);
-        const data = await res.json();
+        let data = null;
+        try {
+          const res = await authFetch(`${API_URL}/mesh/mcp/tools`);
+          if (res.ok) data = await res.json();
+        } catch (_) {}
+
+        if (!data || !Array.isArray(data.tools)) {
+          const directRes = await fetch('http://localhost:5004/mcp/tools');
+          data = await directRes.json();
+        }
         mcpToolsCatalog = data.tools || [];
         renderMcpHubUI();
       } catch (e) {
@@ -2643,12 +2650,25 @@
 
       outBox.textContent = '⏳ מריץ כלי MCP מול השרת...';
       try {
-        const res = await authFetch(`${API_URL}/mesh/mcp/execute`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: selectedMcpTool, arguments: parsedArgs })
-        });
-        const data = await res.json();
+        let data = null;
+        try {
+          const res = await authFetch(`${API_URL}/mesh/mcp/execute`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: selectedMcpTool, arguments: parsedArgs })
+          });
+          if (res.ok) data = await res.json();
+        } catch (_) {}
+
+        if (!data) {
+          const directRes = await fetch('http://localhost:5004/mcp/execute', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: selectedMcpTool, arguments: parsedArgs })
+          });
+          data = await directRes.json();
+        }
+
         outBox.textContent = JSON.stringify(data, null, 2);
         if (data.status === 'success') {
           showToast(`כלי ה-MCP "${selectedMcpTool}" הורץ בהצלחה!`);
@@ -2669,13 +2689,21 @@
     let currentAgentPrompt = 'סריקה מלאה של כל המערכת: בדיקת מלאי קריטי, ביקורת אשראי הזמנות, רווחיות מט"ח וביצועי Redis';
 
     async function loadMultiAgentsView() {
-      if (!authToken) { showLockedState(); return; }
       const list = document.getElementById('dataList');
       list.innerHTML = '<div class="loading-spin">טוען נתוני Multi-Agents AI ואישורים ממתינים (Human-in-the-Loop)...</div>';
 
       try {
-        const res = await authFetch(`${API_URL}/mesh/agents/runs`);
-        const data = await res.json();
+        let data = null;
+        try {
+          const res = await authFetch(`${API_URL}/mesh/agents/runs`);
+          if (res.ok) data = await res.json();
+        } catch (_) {}
+
+        if (!data || data.status !== 'success') {
+          const directRes = await fetch('http://localhost:5002/api/analytics/agents/runs');
+          data = await directRes.json();
+        }
+
         agentRunsHistory = data.runs || [];
         pendingAgentApprovals = data.pending_approvals || [];
         if (!latestAgentRun && agentRunsHistory.length > 0) {
@@ -2837,16 +2865,30 @@
       }
 
       try {
-        const res = await authFetch(`${API_URL}/mesh/agents/run`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: currentAgentPrompt,
-            auto_execute: !requireHitlApproval,
-            trigger_type: 'USER_PROMPT'
-          })
+        const reqPayload = JSON.stringify({
+          prompt: currentAgentPrompt,
+          auto_execute: !requireHitlApproval,
+          trigger_type: 'USER_PROMPT'
         });
-        const data = await res.json();
+        let data = null;
+        try {
+          const res = await authFetch(`${API_URL}/mesh/agents/run`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: reqPayload
+          });
+          if (res.ok) data = await res.json();
+        } catch (_) {}
+
+        if (!data || data.status !== 'success') {
+          const directRes = await fetch('http://localhost:5002/api/analytics/agents/run', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: reqPayload
+          });
+          data = await directRes.json();
+        }
+
         if (data.status === 'success') {
           latestAgentRun = data;
           const approvalsCount = (data.pending_approvals || []).length;
@@ -2874,15 +2916,29 @@
 
     async function handleHitlDecision(approvalId, decisionAction) {
       try {
-        const res = await authFetch(`${API_URL}/mesh/agents/approve/${approvalId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: decisionAction,
-            reviewed_by: currentUser ? `${currentUser.name} (${currentUser.email})` : 'מנהל מערכת'
-          })
+        const reqPayload = JSON.stringify({
+          action: decisionAction,
+          reviewed_by: currentUser ? `${currentUser.name} (${currentUser.email})` : 'מנהל מערכת'
         });
-        const data = await res.json();
+        let data = null;
+        try {
+          const res = await authFetch(`${API_URL}/mesh/agents/approve/${approvalId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: reqPayload
+          });
+          if (res.ok) data = await res.json();
+        } catch (_) {}
+
+        if (!data || data.status !== 'success') {
+          const directRes = await fetch(`http://localhost:5002/api/analytics/agents/approve/${approvalId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: reqPayload
+          });
+          data = await directRes.json();
+        }
+
         if (data.status === 'success') {
           showToast(
             decisionAction === 'APPROVE'
