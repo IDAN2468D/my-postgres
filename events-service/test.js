@@ -1,5 +1,9 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+
+const serverSource = fs.readFileSync(path.join(__dirname, 'server.js'), 'utf8');
 
 test('Event payload formatting logic', () => {
   const formatEvent = (evt) => ({
@@ -13,17 +17,22 @@ test('Event payload formatting logic', () => {
   });
 
   const evt = formatEvent({
-    type: 'CACHE_BENCHMARK',
-    severity: 'success',
-    title: 'בדיקת ביצועים',
-    message: 'סנכרון תקין'
+    type: 'AGENT_TRIGGER_LOW_STOCK',
+    severity: 'warning',
+    title: 'טריגר סוכן מלאי',
+    message: 'ירידה למלאי קריטי'
   });
 
-  assert.equal(evt.type, 'CACHE_BENCHMARK');
-  assert.equal(evt.severity, 'success');
-  assert.equal(evt.title, 'בדיקת ביצועים');
+  assert.equal(evt.type, 'AGENT_TRIGGER_LOW_STOCK');
+  assert.equal(evt.severity, 'warning');
+  assert.equal(evt.title, 'טריגר סוכן מלאי');
   assert.equal(evt.source, 'events-service');
   assert.ok(evt.timestamp);
+});
+
+test('Agent triggers counter support in server.js', () => {
+  assert.ok(serverSource.includes('stats:agent_triggers'));
+  assert.ok(serverSource.includes('agent_triggers: agentTriggers'));
 });
 
 test('Speedup factor calculation logic', () => {

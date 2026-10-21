@@ -161,11 +161,40 @@ public class MicroservicesGatewayController {
         }
     }
 
+    @PostMapping("/agents/run")
+    public ResponseEntity<Object> runMultiAgentMission(@RequestBody Map<String, Object> body) {
+        try {
+            String prompt = String.valueOf(body.getOrDefault("prompt", "סריקת מערכת מלאה"));
+            auditLogService.log("MULTI_AGENT_MISSION", "AGENT", null, "הופעלה משימת Multi-Agents: " + prompt);
+            String json = objectMapper.writeValueAsString(body);
+            return forwardPost(analyticsUrl + "/api/analytics/agents/run", json);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("status", "error", "message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/agents/runs")
+    public ResponseEntity<Object> getMultiAgentRuns() {
+        return forwardGet(analyticsUrl + "/api/analytics/agents/runs");
+    }
+
+    @PostMapping("/agents/approve/{id}")
+    public ResponseEntity<Object> reviewAgentApproval(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        try {
+            String action = String.valueOf(body.getOrDefault("action", "APPROVE"));
+            auditLogService.log("AGENT_ACTION_REVIEW", "AGENT", id, "בוצעה החלטת Human-in-the-Loop (" + action + ") על הצעת סוכן #" + id);
+            String json = objectMapper.writeValueAsString(body);
+            return forwardPost(analyticsUrl + "/api/analytics/agents/approve/" + id, json);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("status", "error", "message", e.getMessage()));
+        }
+    }
+
     private ResponseEntity<Object> forwardGet(String targetUrl) {
         try {
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(targetUrl))
-                    .timeout(Duration.ofSeconds(5))
+                    .timeout(Duration.ofSeconds(10))
                     .GET()
                     .build();
             HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
@@ -180,7 +209,7 @@ public class MicroservicesGatewayController {
         try {
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(targetUrl))
-                    .timeout(Duration.ofSeconds(5))
+                    .timeout(Duration.ofSeconds(15))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();

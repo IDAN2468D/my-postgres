@@ -1,15 +1,19 @@
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timezone
+from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
+from multi_agent_orchestrator import MultiAgentSupervisor
+
 app = FastAPI(
-    title="AI Analytics & Currency Microservice",
-    version="3.0.0",
-    description="Python FastAPI Microservice for Business Intelligence, Inventory Forecasting & Multi-Currency Conversion"
+    title="AI Analytics, Currency & Multi-Agents Microservice",
+    version="4.0.0",
+    description="Python FastAPI Microservice for Multi-Agent AI Orchestration, Business Intelligence, Inventory Forecasting & Multi-Currency Conversion"
 )
 
 app.add_middleware(
@@ -48,6 +52,23 @@ def get_db_connection():
     )
 
 
+supervisor = MultiAgentSupervisor(
+    db_conn_factory=lambda: get_db_connection(),
+    exchange_rates=EXCHANGE_RATES
+)
+
+
+class AgentMissionRequest(BaseModel):
+    prompt: Optional[str] = "סריקת מערכת מלאה של כל הסוכנים"
+    auto_execute: Optional[bool] = False
+    trigger_type: Optional[str] = "USER_PROMPT"
+
+
+class AgentApprovalReviewRequest(BaseModel):
+    action: Optional[str] = "APPROVE"
+    reviewed_by: Optional[str] = "מנהל מערכת (Human-in-the-Loop)"
+
+
 @app.get("/health")
 def health_check():
     t0 = time.time()
@@ -62,12 +83,14 @@ def health_check():
         return {
             "status": "success",
             "service": "python-analytics-fastapi",
+            "version": "4.0.0",
             "port": int(os.getenv("PORT", "5002")),
             "database_connected": True,
             "products_indexed": row["cnt"] if row else 0,
+            "multi_agents_enabled": True,
             "latency_ms": latency_ms,
             "uptime_seconds": round(time.time() - START_TIME, 1),
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
     except Exception as e:
         return {
@@ -222,3 +245,26 @@ def convert_catalog_currency(currency: str = "USD"):
         }
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+@app.post("/api/analytics/agents/run")
+def run_multi_agent_mission(req: AgentMissionRequest):
+    return supervisor.run_mission(
+        prompt=req.prompt or "סריקת מערכת מלאה של כל הסוכנים",
+        trigger_type=req.trigger_type or "USER_PROMPT",
+        auto_execute=bool(req.auto_execute)
+    )
+
+
+@app.get("/api/analytics/agents/runs")
+def get_multi_agent_runs(limit: int = 10):
+    return supervisor.get_runs_and_approvals(limit=limit)
+
+
+@app.post("/api/analytics/agents/approve/{approval_id}")
+def approve_or_reject_agent_action(approval_id: int, req: AgentApprovalReviewRequest):
+    return supervisor.review_approval(
+        approval_id=approval_id,
+        action=req.action or "APPROVE",
+        reviewed_by=req.reviewed_by or "מנהל מערכת (Human-in-the-Loop)"
+    )

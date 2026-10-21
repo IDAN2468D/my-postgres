@@ -1164,6 +1164,133 @@
       max-height: 280px;
       white-space: pre-wrap;
     }
+
+    /* Multi-Agents AI Hub Styles (v4.0) */
+    .quick-missions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .mission-preset-btn {
+      text-align: right;
+      padding: 11px 14px;
+      border-radius: 12px;
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #e9d5ff;
+      font-family: 'Heebo', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mission-preset-btn:hover {
+      background: rgba(168, 85, 247, 0.24);
+      border-color: #c084fc;
+      transform: translateY(-2px);
+    }
+
+    .hitl-toggle-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      border-radius: 12px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fde68a;
+      font-size: 13px;
+    }
+
+    .agent-trace-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .agent-step-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .agent-step-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .agent-tool-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: rgba(0, 223, 216, 0.14);
+      border: 1px solid rgba(0, 223, 216, 0.35);
+      color: #67e8f9;
+      font-family: Consolas, monospace;
+      font-size: 11.5px;
+      margin-left: 4px;
+      margin-bottom: 4px;
+    }
+
+    .approval-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .btn-approve-hitl {
+      padding: 7px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      background: rgba(16, 185, 129, 0.22);
+      color: #6ee7b7;
+      font-weight: 700;
+      font-size: 12.5px;
+      cursor: pointer;
+      font-family: 'Heebo', sans-serif;
+    }
+
+    .btn-approve-hitl:hover {
+      background: rgba(16, 185, 129, 0.4);
+      color: #fff;
+    }
+
+    .btn-reject-hitl {
+      padding: 7px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      font-weight: 700;
+      font-size: 12.5px;
+      cursor: pointer;
+      font-family: 'Heebo', sans-serif;
+    }
+
+    .btn-reject-hitl:hover {
+      background: rgba(239, 68, 68, 0.4);
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -1181,10 +1308,10 @@
     <header>
       <div class="brand">
         <h1>
-          <span>לוח בקרה | PostgreSQL & Microservices Mesh ✨</span>
-          <span class="version-pill">v3.0 MCP HUB</span>
+          <span>לוח בקרה | PostgreSQL & Multi-Agent AI Mesh ✨</span>
+          <span class="version-pill">v4.0 MULTI-AGENTS</span>
         </h1>
-        <p>ארכיטקטורת מיקרו-סרביסים מלאה: <code>Spring Boot 3</code> • <code>Python FastAPI AI</code> • <code>Node.js + Redis 7</code> • <code>MCP Server</code> 🔐</p>
+        <p>ארכיטקטורת מיקרו-סרביסים וצוות סוכני AI: <code>Spring Boot 3</code> • <code>Python Multi-Agents</code> • <code>Node.js + Redis 7</code> • <code>MCP Server (12 Tools)</code> 🔐</p>
       </div>
 
       <div class="header-actions">
@@ -1198,6 +1325,10 @@
             <span>🔐 התחברות / הרשמה</span>
           </button>
         </div>
+
+        <button class="btn-outline" onclick="switchTab('agents')" style="border-color: rgba(168, 85, 247, 0.5); color: #e9d5ff;">
+          <span>🧠 Multi-Agents AI</span>
+        </button>
 
         <button class="btn-outline" onclick="switchTab('mcp')" style="border-color: rgba(0, 223, 216, 0.4); color: #00dfd8;">
           <span>🤖 MCP Live Hub</span>
@@ -1480,6 +1611,7 @@
           <button class="tab-btn" id="tabAudit" onclick="switchTab('audit')">📜 יומן פעילות (Audit)</button>
           <button class="tab-btn" id="tabMesh" onclick="switchTab('mesh')" style="border-color: rgba(59, 130, 246, 0.4); color: #93c5fd;">🌐 מיקרו-סרביסים ו-AI (FastAPI + Redis)</button>
           <button class="tab-btn" id="tabMcp" onclick="switchTab('mcp')" style="border-color: rgba(0, 223, 216, 0.4); color: #00dfd8;">🤖 מרכז שליטה MCP (MCP Hub)</button>
+          <button class="tab-btn" id="tabAgents" onclick="switchTab('agents')" style="border-color: rgba(168, 85, 247, 0.5); color: #e9d5ff;">🧠 צוות סוכני AI (Multi-Agents)</button>
         </div>
 
         <!-- Dynamic Filter Toolbar -->
@@ -2221,7 +2353,7 @@
       document.getElementById('searchInput').value = '';
 
       const toolbar = document.getElementById('filterToolbar');
-      toolbar.style.display = (tab === 'mesh' || tab === 'mcp') ? 'none' : 'flex';
+      toolbar.style.display = (tab === 'mesh' || tab === 'mcp' || tab === 'agents') ? 'none' : 'flex';
 
       // Hide all tab-specific filters first
       document.getElementById('productCategoryFilter').style.display = 'none';
@@ -2253,6 +2385,9 @@
       } else if (tab === 'mcp') {
         document.getElementById('tabMcp').classList.add('active');
         loadMcpHubView();
+      } else if (tab === 'agents') {
+        document.getElementById('tabAgents').classList.add('active');
+        loadMultiAgentsView();
       }
     }
 
@@ -2458,7 +2593,7 @@
             <span class="jwt-pill">מחובר ל-Antigravity (mcp_config.json)</span>
           </h3>
           <p style="font-size: 13.5px; color: #cbd5e1; margin-bottom: 14px;">
-            בחר אחד מ-8 כלי ה-MCP הרשומים למטה כדי להריץ שאילתות SQL חכמות, לבדוק את רשת המיקרו-סרביסים או לעדכן מלאי דרך פרוטוקול JSON-RPC 2.0:
+            בחר אחד מ-12 כלי ה-MCP הרשומים למטה כדי להריץ שאילתות SQL מוקשחות, להצליב נתונים בין מסדים (<code>mydb</code> + <code>shop_db</code>), או לעדכן מלאי והזמנות דרך פרוטוקול JSON-RPC 2.0:
           </p>
 
           <div class="mcp-tools-grid">
@@ -2523,6 +2658,246 @@
         }
       } catch (e) {
         outBox.textContent = 'שגיאת תקשורת: ' + e.message;
+      }
+    }
+
+    // Multi-Agents AI Orchestrator Hub (v4.0)
+    let latestAgentRun = null;
+    let agentRunsHistory = [];
+    let pendingAgentApprovals = [];
+    let requireHitlApproval = true;
+    let currentAgentPrompt = 'סריקה מלאה של כל המערכת: בדיקת מלאי קריטי, ביקורת אשראי הזמנות, רווחיות מט"ח וביצועי Redis';
+
+    async function loadMultiAgentsView() {
+      if (!authToken) { showLockedState(); return; }
+      const list = document.getElementById('dataList');
+      list.innerHTML = '<div class="loading-spin">טוען נתוני Multi-Agents AI ואישורים ממתינים (Human-in-the-Loop)...</div>';
+
+      try {
+        const res = await authFetch(`${API_URL}/mesh/agents/runs`);
+        const data = await res.json();
+        agentRunsHistory = data.runs || [];
+        pendingAgentApprovals = data.pending_approvals || [];
+        if (!latestAgentRun && agentRunsHistory.length > 0) {
+          latestAgentRun = agentRunsHistory[0];
+        }
+        renderMultiAgentsHubUI();
+      } catch (e) {
+        renderMultiAgentsHubUI();
+      }
+    }
+
+    function renderMultiAgentsHubUI() {
+      const list = document.getElementById('dataList');
+      const steps = (latestAgentRun && Array.isArray(latestAgentRun.agent_steps)) ? latestAgentRun.agent_steps : [];
+      const execMs = latestAgentRun && latestAgentRun.execution_ms ? latestAgentRun.execution_ms : 0;
+
+      list.innerHTML = `
+        <!-- 1. Supervisor Mission Command Center -->
+        <div class="hub-section" style="border-color: rgba(168, 85, 247, 0.35);">
+          <h3>
+            <span>🧠 מרכז תזמור צוות סוכני AI (Supervisor + 4 Specialized Agents)</span>
+            <span class="jwt-pill" style="background: rgba(168, 85, 247, 0.25); border-color: rgba(168, 85, 247, 0.5); color: #e9d5ff;">v4.0 Multi-Agent Mesh</span>
+          </h3>
+          <p style="font-size: 13.5px; color: #cbd5e1; margin-bottom: 12px;">
+            הזן משימה בשפה טבעית עבור ה-Supervisor או בחר אחת מ-4 משימות המומחים. הסוכנים מתקשרים מול שרת ה-MCP (<code>:5004</code>) ומסדי הנתונים <code>mydb</code> ו-<code>shop_db</code>:
+          </p>
+
+          <div class="quick-missions-grid">
+            <button type="button" class="mission-preset-btn" onclick="selectQuickMission('📦 בדיקת מלאי קריטי והכנת הזמנות רכש')">
+              📦 בדיקת מלאי קריטי והכנת הזמנות רכש
+            </button>
+            <button type="button" class="mission-preset-btn" onclick="selectQuickMission('🛡️ ביקורת אשראי לקוחות (mydb + shop_db) ואישור הזמנות')">
+              🛡️ ביקורת אשראי לקוחות (mydb + shop_db) ואישור הזמנות
+            </button>
+            <button type="button" class="mission-preset-btn" onclick="selectQuickMission('📊 ניתוח רווחיות, מלאי שוכב ותמחור מט&quot;ח')">
+              📊 ניתוח רווחיות, מלאי שוכב ותמחור מט"ח
+            </button>
+            <button type="button" class="mission-preset-btn" onclick="selectQuickMission('⚡ סריקת בריאות מיקרו-סרביסים, אבטחה וביצועי Redis')">
+              ⚡ סריקת בריאות מיקרו-סרביסים, אבטחה וביצועי Redis
+            </button>
+          </div>
+
+          <div class="hitl-toggle-bar">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 700;">
+              <input type="checkbox" id="hitlToggleCheck" ${requireHitlApproval ? 'checked' : ''} onchange="requireHitlApproval = this.checked" style="width: 17px; height: 17px;">
+              <span>🛡️ דרוש אישור אנושי לפני שינוי מסד הנתונים (Human-in-the-Loop)</span>
+            </label>
+            <span style="font-size: 12px; color: #fcd34d;">כאשר פעיל, פעולות כתיבה ל-PostgreSQL נשמרות לאישור מנהל לפני ביצוע ב-MCP</span>
+          </div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" id="agentMissionInput" class="search-input" style="flex: 1; min-width: 260px;" value="${currentAgentPrompt.replace(/"/g, '&quot;')}" placeholder="הקלד פקודה בעברית לצוות הסוכנים...">
+            <button type="button" class="btn-submit" id="runAgentsBtn" style="width: auto; padding: 11px 24px;" onclick="runMultiAgentMissionFromUI()">
+              <span>🚀 הפעל צוות סוכני AI</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Human-in-the-Loop Pending Approvals -->
+        <div class="hub-section" style="border-color: rgba(245, 158, 11, 0.35);">
+          <h3>
+            <span>⏳ הצעות סוכנים הממתינות לאישור אנושי (Pending Approvals: ${pendingAgentApprovals.length})</span>
+            <button class="btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="loadMultiAgentsView()">🔄 רענן הצעות</button>
+          </h3>
+
+          ${pendingAgentApprovals.length === 0 ? `
+            <div style="color: #94a3b8; font-size: 13px; padding: 8px 0;">
+              ✅ אין הצעות פעולה הממתינות לאישור כרגע. הפעל משימת מלאי או הזמנות כדי ליצור הצעות חדשות.
+            </div>
+          ` : pendingAgentApprovals.map(app => {
+            const argsStr = typeof app.proposed_arguments === 'string'
+              ? app.proposed_arguments
+              : JSON.stringify(app.proposed_arguments || {});
+            return `
+              <div class="approval-card">
+                <div style="flex: 1; min-width: 240px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
+                    <span class="role-tag" style="background: rgba(168, 85, 247, 0.3); color: #e9d5ff;">🤖 ${app.agent_name}</span>
+                    <span class="agent-tool-chip">⚡ ${app.mcp_tool_name}</span>
+                    <span style="font-size: 12px; color: #94a3b8;">הצעה #${app.id}</span>
+                  </div>
+                  <div style="font-size: 13.5px; color: #f8fafc; font-weight: 600; margin-bottom: 4px;">
+                    ${app.reasoning_hebrew}
+                  </div>
+                  <div style="font-size: 11.5px; color: #94a3b8; font-family: Consolas, monospace; direction: ltr; text-align: left;">
+                    Args: ${argsStr}
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn-approve-hitl" onclick="handleHitlDecision(${app.id}, 'APPROVE')">
+                    ✅ אשר ובצע ב-MCP
+                  </button>
+                  <button class="btn-reject-hitl" onclick="handleHitlDecision(${app.id}, 'REJECT')">
+                    ❌ דחה הצעה
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- 3. Visual Agent Execution Trace Timeline -->
+        <div class="hub-section">
+          <h3>
+            <span>🔗 ציר זמן ושרשרת ביצוע של הסוכנים (Agent Execution Trace)</span>
+            ${latestAgentRun ? `<span style="font-size: 12px; color: #34d399;">זמן ריצה כולל: ${execMs}ms • סטטוס: ${latestAgentRun.status || latestAgentRun.mission_status || 'completed'}</span>` : ''}
+          </h3>
+
+          ${steps.length === 0 ? `
+            <div style="color: #94a3b8; font-size: 13.5px; padding: 12px 0;">
+              לחץ על <strong>"🚀 הפעל צוות סוכני AI"</strong> או על אחד מכפתורי המשימות המהירות למעלה כדי לצפות בשרשרת ההחלטות החיה של 4 הסוכנים.
+            </div>
+          ` : `
+            <div class="order-summary-box" style="margin-bottom: 12px;">
+              <span>🎯 <strong>משימה אחרונה:</strong> ${latestAgentRun.user_goal || ''}</span>
+              <strong>${steps.length} סוכנים השתתפו</strong>
+            </div>
+            <div class="agent-trace-grid">
+              ${steps.map(step => `
+                <div class="agent-step-card">
+                  <div class="agent-step-head">
+                    <strong style="color: #e9d5ff; font-size: 14px;">${step.role || step.agent}</strong>
+                    <span style="font-size: 11.5px; color: #34d399; font-family: 'Outfit', sans-serif;">${step.duration_ms || 0}ms</span>
+                  </div>
+                  <div>
+                    ${(step.tools_called || []).map(t => `<span class="agent-tool-chip">🔧 ${t}</span>`).join('')}
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #e2e8f0; margin-top: 4px;">
+                    ${(step.findings || [step.summary || '']).map(f => `<div>• ${f}</div>`).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function selectQuickMission(presetText) {
+      currentAgentPrompt = presetText;
+      const inp = document.getElementById('agentMissionInput');
+      if (inp) inp.value = presetText;
+      runMultiAgentMissionFromUI();
+    }
+
+    async function runMultiAgentMissionFromUI() {
+      const inp = document.getElementById('agentMissionInput');
+      if (inp && inp.value.trim()) {
+        currentAgentPrompt = inp.value.trim();
+      }
+      const hitlEl = document.getElementById('hitlToggleCheck');
+      if (hitlEl) {
+        requireHitlApproval = hitlEl.checked;
+      }
+      const btn = document.getElementById('runAgentsBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳ מתזמר סוכני AI מול MCP...</span>';
+      }
+
+      try {
+        const res = await authFetch(`${API_URL}/mesh/agents/run`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: currentAgentPrompt,
+            auto_execute: !requireHitlApproval,
+            trigger_type: 'USER_PROMPT'
+          })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          latestAgentRun = data;
+          const approvalsCount = (data.pending_approvals || []).length;
+          showToast(
+            approvalsCount > 0
+              ? `המשימה הושלמה! נוצרו ${approvalsCount} הצעות הממתינות לאישור אנושי`
+              : `משימת צוות הסוכנים הושלמה בהצלחה (${data.execution_ms}ms)!`
+          );
+          await loadStats();
+          await loadProducts();
+          await loadOrders();
+          await loadMultiAgentsView();
+        } else {
+          showToast(data.message || 'שגיאה בהרצת צוות הסוכנים', 'error');
+        }
+      } catch (e) {
+        showToast('שגיאת תקשורת מול שירות הסוכנים', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>🚀 הפעל צוות סוכני AI</span>';
+        }
+      }
+    }
+
+    async function handleHitlDecision(approvalId, decisionAction) {
+      try {
+        const res = await authFetch(`${API_URL}/mesh/agents/approve/${approvalId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: decisionAction,
+            reviewed_by: currentUser ? `${currentUser.name} (${currentUser.email})` : 'מנהל מערכת'
+          })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(
+            decisionAction === 'APPROVE'
+              ? `✅ הצעה #${approvalId} אושרה ובוצעה ב-MCP מול PostgreSQL!`
+              : `❌ הצעה #${approvalId} נדחתה.`
+          );
+          await loadStats();
+          await loadProducts();
+          await loadOrders();
+          await loadMultiAgentsView();
+        } else {
+          showToast(data.message || 'שגיאה בעדכון החלטת אישור', 'error');
+        }
+      } catch (e) {
+        showToast('שגיאת תקשורת בעת אישור ההצעה', 'error');
       }
     }
 
@@ -3004,6 +3379,7 @@
       loadAuditLogs();
       if (currentTab === 'mesh') loadMicroservicesView();
       if (currentTab === 'mcp') loadMcpHubView();
+      if (currentTab === 'agents') loadMultiAgentsView();
     }
 
     async function init() {

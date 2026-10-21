@@ -8,12 +8,18 @@ import com.idan.postgresapp.repository.ProductRepository;
 import com.idan.postgresapp.repository.UserRepository;
 import com.idan.postgresapp.service.AuditLogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @RestController
@@ -32,6 +38,30 @@ public class OrderController {
 
     @Autowired
     private AuditLogService auditLogService;
+
+    @Value("${EVENTS_URL:http://events-service:5003}")
+    private String eventsUrl;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    private void emitAgentTriggerEvent(String type, String severity, String title, String message) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                Map<String, Object> body = new HashMap<>();
+                body.put("type", type);
+                body.put("severity", severity);
+                body.put("title", title);
+                body.put("message", message);
+                body.put("source", "spring-boot-order-trigger");
+                HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+                restTemplate.postForEntity(eventsUrl + "/api/events/emit", entity, Map.class);
+            } catch (Exception ignored) {
+                // Non-blocking best-effort event trigger
+            }
+        });
+    }
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllOrders(
@@ -130,12 +160,22 @@ public class OrderController {
             }
 
             // Deduct stock
-            product.setStock(currentStock - quantity);
+            int remainingStock = currentStock - quantity;
+            product.setStock(remainingStock);
             productRepository.save(product);
 
             productName = product.getName();
             if (totalAmount == null) {
                 totalAmount = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+            }
+
+            if (remainingStock <= 5) {
+                emitAgentTriggerEvent(
+                        "AGENT_TRIGGER_LOW_STOCK",
+                        "warning",
+                        "📦 טריגר סוכן מלאי: ירידה למלאי קריטי (" + remainingStock + " יח')",
+                        "בעקבות הזמנה חדשה, מלאי המוצר '" + productName + "' ירד ל-" + remainingStock + " יחידות. מומלץ להפעיל את InventoryRestockAgent."
+                );
             }
         }
 
@@ -147,6 +187,15 @@ public class OrderController {
 
         Order order = new Order(userId, productId, productName, quantity, totalAmount, status);
         Order saved = orderRepository.save(order);
+
+        if (totalAmount.compareTo(new BigDecimal("3000")) > 0) {
+            emitAgentTriggerEvent(
+                    "AGENT_TRIGGER_HIGH_VALUE_ORDER",
+                    "info",
+                    "🛡️ טריגר סוכן אשראי: הזמנה בסכום גבוה (#" + saved.getId() + ")",
+                    "נוצרה הזמנה #" + saved.getId() + " בסך ₪" + saved.getTotalAmount() + " (מעל ₪3,000). מומלץ להפעיל את OrderFraudCreditAgent לבדיקת אשראי מול shop_db."
+            );
+        }
 
         auditLogService.log(
                 "CREATE_ORDER",

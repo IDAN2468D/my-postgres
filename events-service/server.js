@@ -62,6 +62,14 @@ async function pushEvent(evt) {
     await redisClient.lPush('system:events', JSON.stringify(payload));
     await redisClient.lTrim('system:events', 0, 49);
     await redisClient.incr('stats:events_total');
+    if (
+      String(payload.type).startsWith('AGENT_') ||
+      String(payload.type).startsWith('MCP_') ||
+      String(payload.source).includes('agent') ||
+      String(payload.source).includes('mcp')
+    ) {
+      await redisClient.incr('stats:agent_triggers');
+    }
   }
   return payload;
 }
@@ -98,6 +106,7 @@ app.get('/api/events/feed', async (req, res) => {
     let events = [];
     let cacheHits = 0;
     let totalEvents = 0;
+    let agentTriggers = 0;
     let lastSync = null;
 
     if (redisConnected) {
@@ -108,6 +117,7 @@ app.get('/api/events/feed', async (req, res) => {
 
       cacheHits = parseInt((await redisClient.get('stats:cache_hits')) || '0', 10);
       totalEvents = parseInt((await redisClient.get('stats:events_total')) || String(events.length), 10);
+      agentTriggers = parseInt((await redisClient.get('stats:agent_triggers')) || '0', 10);
       const syncMeta = await redisClient.get('cache:last_benchmark');
       if (syncMeta) {
         try { lastSync = JSON.parse(syncMeta); } catch {}
@@ -121,6 +131,7 @@ app.get('/api/events/feed', async (req, res) => {
       metrics: {
         cache_hits: cacheHits,
         total_events: totalEvents,
+        agent_triggers: agentTriggers,
         last_benchmark: lastSync
       },
       events
