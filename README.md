@@ -31,7 +31,7 @@
   - **סינתזת מנהלים לצוות הסוכנים:** סיכום אופרטיבי חכם עבור כל ריצה של ה-`MultiAgentSupervisor`.
   - **היברידיות וזמינות 100%:** תמיכה בחיבור חי ל-Google Cloud REST API לצד מנוע הקשרי חכם מקומי במצב אופליין ובדיקות.
 - 🧠 **Multi-Agent AI Orchestration (`v4.0`):** מפקח עליון (`Supervisor`) ו-4 סוכנים מתמחים (מלאי, אשראי והונאות, BI פיננסי, SRE ואבטחה) עם מנגנון אישור אנושי (**Human-in-the-Loop - HITL**).
-- 🌐 **Fullstack Microservices Mesh:** שבעה שירותים עצמאיים ברשת פנימית מבודדת ב-Docker (`default_app-network`).
+- 🌐 **Fullstack Microservices Mesh:** שבעה שירותים עצמאיים ברשת פנימית מבודדת ב-Docker (`my-docker-context_app-network`).
 - 🔐 **אבטחת מידע ארגונית ו-JWT:** אימות `JSON Web Token` מלא לפי תקן `RFC 7519`, הצפנת סיסמאות `BCrypt` ורישום פעולות ביומן אבטחה (`audit_logs`).
 - ⚡ **האצת Redis 7 & Event Bus:** קאש מבוזר עם האצה של **פי 20+** מול PostgreSQL, בדיקת ביצועים בלייב ופיד התראות בזמן אמת.
 - 🛠️ **שרת MCP תקני (JSON-RPC 2.0):** 13 כלים מאובטחים לקריאה וכתיבה מבוקרת, תמיכה בעסקאות `READ ONLY` עם `statement_timeout = 3000ms`.

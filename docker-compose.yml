@@ -1,4 +1,4 @@
-name: default
+name: my-docker-context
 
 services:
   # 1. PostgreSQL 16 Database
@@ -13,7 +13,7 @@ services:
     ports:
       - "${POSTGRES_PORT:-5433}:5432"
     volumes:
-      - default_postgres_data:/var/lib/postgresql/data
+      - my-docker-context_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -165,8 +165,9 @@ services:
 
 networks:
   app-network:
-    name: default_app-network
+    name: my-docker-context_app-network
 
 volumes:
-  default_postgres_data:
-    name: default_postgres_data
+  my-docker-context_postgres_data:
+    external: true
+    name: my-docker-context_postgres_data
