@@ -1,0 +1,3027 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PostgreSQL Live Hub v2.0 | מערכת ניהול ארגונית מאובטחת JWT 🔐</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #090a0f;
+      font-family: 'Assistant', 'Outfit', sans-serif;
+      color: #f1f5f9;
+      overflow-x: hidden;
+      position: relative;
+      padding: 30px 20px 60px;
+    }
+
+    /* Ambient Aurora Orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.4;
+      animation: float 14s infinite alternate ease-in-out;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { width: 450px; height: 450px; background: radial-gradient(circle, #7928ca, #ff0080); top: -10%; left: 10%; }
+    .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, #0070f3, #00dfd8); bottom: -10%; right: 10%; animation-delay: -7s; }
+    .orb-3 { width: 320px; height: 320px; background: radial-gradient(circle, #f5a623, #ff4d4d); top: 40%; right: 40%; opacity: 0.22; }
+
+    @keyframes float {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-50px) rotate(15deg); }
+    }
+
+    canvas#sparkles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 1320px;
+      margin: 0 auto;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 380px;
+    }
+
+    .toast {
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: rgba(17, 20, 32, 0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideUp 0.25s ease-out;
+    }
+
+    .toast.success { border-right: 4px solid #10b981; }
+    .toast.error { border-right: 4px solid #ef4444; }
+    .toast.info { border-right: 4px solid #3b82f6; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      padding: 22px 28px;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .brand h1 {
+      font-size: 27px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 35%, #a5b4fc 70%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .version-pill {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #7928ca, #ff0080);
+      -webkit-text-fill-color: #fff;
+      font-weight: 700;
+    }
+
+    .brand p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #34d399;
+      transition: all 0.3s;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.8); opacity: 0.5; }
+    }
+
+    .btn-outline {
+      padding: 8px 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      color: #f1f5f9;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .btn-auth-primary {
+      padding: 9px 18px;
+      background: linear-gradient(135deg, #7928ca, #ff0080);
+      border: none;
+      border-radius: 13px;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 16px rgba(255, 0, 128, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    .btn-auth-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(255, 0, 128, 0.5);
+    }
+
+    .user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 14px;
+      background: rgba(121, 40, 202, 0.15);
+      border: 1px solid rgba(121, 40, 202, 0.4);
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .role-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: #7928ca;
+      color: #fff;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .jwt-pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      font-weight: 700;
+    }
+
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.4);
+      color: #fff;
+    }
+
+    /* Security Notice Bar */
+    .security-notice {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 11px 20px;
+      margin-bottom: 22px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      border-radius: 16px;
+      color: #bfdbfe;
+      font-size: 13.5px;
+    }
+
+    .security-notice.guest {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+    }
+
+    /* KPI Stats Row (6 cards) */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s, border-color 0.25s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .kpi-card.alert-card {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: rgba(245, 158, 11, 0.06);
+    }
+
+    .kpi-title {
+      font-size: 13px;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 27px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .kpi-sub {
+      font-size: 11.5px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .kpi-icon {
+      position: absolute;
+      left: 16px;
+      top: 18px;
+      font-size: 24px;
+      opacity: 0.85;
+    }
+
+    /* Analytics Visual Section */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    @media (max-width: 960px) {
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-box {
+      background: rgba(255, 255, 255, 0.025);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 20px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .chart-box h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .bar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #00dfd8, #7928ca, #ff0080);
+      transition: width 0.5s ease;
+    }
+
+    .status-pills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .status-stat-card {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status-stat-card .st-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .status-stat-card .st-num {
+      font-size: 20px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Main Content Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 960px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(24px);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card-head h2 {
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    /* Action Sidebar Mode Switcher */
+    .sidebar-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .sidebar-tab {
+      padding: 8px 6px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .sidebar-tab.active {
+      background: linear-gradient(135deg, rgba(121, 40, 202, 0.7), rgba(255, 0, 128, 0.7));
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(255, 0, 128, 0.25);
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 11px 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14.5px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group select option {
+      background: #111420;
+      color: #fff;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: #00dfd8;
+      box-shadow: 0 0 12px rgba(0, 223, 216, 0.25);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .order-summary-box {
+      padding: 12px 14px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 12px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .order-summary-box strong {
+      font-size: 18px;
+      color: #34d399;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #7928ca, #ff0080);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(255, 0, 128, 0.35);
+      transition: all 0.25s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(255, 0, 128, 0.5);
+    }
+
+    /* Tabs & Filter Toolbar */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: #94a3b8;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .filter-toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 180px;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 13.5px;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: #00dfd8;
+    }
+
+    .filter-select {
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .filter-select option {
+      background: #111420;
+      color: #fff;
+    }
+
+    .checkbox-filter {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #fde68a;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      user-select: none;
+    }
+
+    /* Data List */
+    .products-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 560px;
+      overflow-y: auto;
+      padding-left: 6px;
+    }
+
+    .products-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .products-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+    }
+
+    .product-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 15px 18px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      transition: all 0.2s;
+    }
+
+    .product-row:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .prod-info h4 {
+      font-size: 15.5px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .prod-category {
+      display: inline-block;
+      font-size: 11.5px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      background: rgba(121, 40, 202, 0.2);
+      color: #d8b4fe;
+      border: 1px solid rgba(121, 40, 202, 0.4);
+    }
+
+    .low-stock-badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      font-weight: 700;
+    }
+
+    .out-stock-badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      font-weight: 700;
+    }
+
+    .prod-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .prod-price {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #34d399;
+    }
+
+    .stock-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 4px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+
+    .btn-stock-step {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .btn-stock-step:hover {
+      background: rgba(0, 223, 216, 0.35);
+    }
+
+    .btn-edit {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #93c5fd;
+      border-radius: 10px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 12.5px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-edit:hover {
+      background: rgba(59, 130, 246, 0.3);
+      color: #fff;
+    }
+
+    .btn-del {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      border-radius: 10px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 12.5px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-del:hover {
+      background: rgba(239, 68, 68, 0.3);
+      color: #fff;
+    }
+
+    .order-status-select {
+      padding: 5px 10px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+    }
+
+    .order-status-select.completed { border-color: #10b981; color: #34d399; }
+    .order-status-select.shipped { border-color: #3b82f6; color: #60a5fa; }
+    .order-status-select.pending { border-color: #f59e0b; color: #fbbf24; }
+    .order-status-select.cancelled { border-color: #ef4444; color: #f87171; }
+
+    .loading-spin {
+      text-align: center;
+      padding: 40px;
+      color: #94a3b8;
+    }
+
+    .locked-state {
+      text-align: center;
+      padding: 40px 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+    }
+
+    .locked-state h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: #fca5a5;
+    }
+
+    .locked-state p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-card {
+      background: #111420;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 28px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .modal-close:hover { color: #fff; }
+
+    .modal-tabs {
+      display: flex;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+
+    .modal-tab-btn {
+      padding: 10px 14px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: #94a3b8;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .modal-tab-btn.active {
+      color: #fff;
+      border-bottom-color: #ff0080;
+    }
+
+    .demo-box {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      font-size: 13px;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-quick-login {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(0, 223, 216, 0.12);
+      border: 1px solid rgba(0, 223, 216, 0.35);
+      color: #00dfd8;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-quick-login:hover { background: rgba(0, 223, 216, 0.25); }
+
+    .alert-msg {
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .alert-msg.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    /* Microservices Mesh Status Bar */
+    .mesh-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .mesh-node {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+      transition: all 0.2s;
+    }
+
+    .mesh-node:hover {
+      border-color: rgba(0, 223, 216, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .mesh-node-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .mesh-node-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mesh-node-sub {
+      font-size: 11.5px;
+      color: #94a3b8;
+    }
+
+    .mesh-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .mesh-badge.up {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .mesh-badge.down {
+      background: rgba(239, 68, 68, 0.18);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    /* MCP & AI Hub Cards */
+    .hub-section {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 16px;
+    }
+
+    .hub-section h3 {
+      font-size: 16.5px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .currency-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .curr-btn {
+      padding: 5px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .curr-btn.active {
+      background: linear-gradient(135deg, #0070f3, #00dfd8);
+      color: #090a0f;
+      border-color: transparent;
+    }
+
+    .mcp-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .mcp-tool-card {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mcp-tool-card:hover, .mcp-tool-card.selected {
+      border-color: #ff0080;
+      background: rgba(121, 40, 202, 0.16);
+    }
+
+    .mcp-tool-card code {
+      color: #00dfd8;
+      font-size: 12.5px;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .mcp-tool-card p {
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+
+    .code-area {
+      width: 100%;
+      min-height: 90px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #34d399;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      direction: ltr;
+      text-align: left;
+      outline: none;
+      margin-bottom: 10px;
+    }
+
+    .mcp-output-pre {
+      padding: 14px;
+      border-radius: 12px;
+      background: #050609;
+      border: 1px solid rgba(0, 223, 216, 0.3);
+      color: #a5f3fc;
+      font-family: Consolas, monospace;
+      font-size: 12.5px;
+      direction: ltr;
+      text-align: left;
+      overflow-x: auto;
+      max-height: 280px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <canvas id="sparkles"></canvas>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <h1>
+          <span>לוח בקרה | PostgreSQL & Microservices Mesh ✨</span>
+          <span class="version-pill">v3.0 MCP HUB</span>
+        </h1>
+        <p>ארכיטקטורת מיקרו-סרביסים מלאה: <code>Spring Boot 3</code> • <code>Python FastAPI AI</code> • <code>Node.js + Redis 7</code> • <code>MCP Server</code> 🔐</p>
+      </div>
+
+      <div class="header-actions">
+        <div class="status-badge" id="statusBadge">
+          <span class="status-dot"></span>
+          <span id="statusText">בודק חיבור לשרת...</span>
+        </div>
+
+        <div id="authHeaderSection">
+          <button class="btn-auth-primary" onclick="openAuthModal('login')">
+            <span>🔐 התחברות / הרשמה</span>
+          </button>
+        </div>
+
+        <button class="btn-outline" onclick="switchTab('mcp')" style="border-color: rgba(0, 223, 216, 0.4); color: #00dfd8;">
+          <span>🤖 MCP Live Hub</span>
+        </button>
+
+        <a href="/swagger-ui/index.html" target="_blank" class="btn-outline" title="תיעוד ובדיקת API אינטראקטיבי">
+          <span>📖 Swagger UI</span>
+        </a>
+
+        <a href="http://localhost:8088" target="_blank" class="btn-outline">
+          <span>🖥️ Adminer DB</span>
+        </a>
+
+        <a href="PostgreSQL_API_Collection.postman_collection.json" download class="btn-outline">
+          <span>🚀 Postman</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Live Microservices Mesh Status Bar -->
+    <div class="mesh-bar" id="meshStatusBar">
+      <div class="mesh-node">
+        <div class="mesh-node-info">
+          <span class="mesh-node-title">🐘 PostgreSQL 16</span>
+          <span class="mesh-node-sub">Port 5433 • Primary DB</span>
+        </div>
+        <span class="mesh-badge up" id="mesh-postgres">בודק...</span>
+      </div>
+      <div class="mesh-node">
+        <div class="mesh-node-info">
+          <span class="mesh-node-title">☕ Spring Boot JWT</span>
+          <span class="mesh-node-sub">Port 5001 • API Gateway</span>
+        </div>
+        <span class="mesh-badge up" id="mesh-webapp">בודק...</span>
+      </div>
+      <div class="mesh-node" onclick="switchTab('mesh')" style="cursor:pointer;">
+        <div class="mesh-node-info">
+          <span class="mesh-node-title">🐍 Python AI Analytics</span>
+          <span class="mesh-node-sub">Port 5002 • FastAPI BI</span>
+        </div>
+        <span class="mesh-badge up" id="mesh-analytics">בודק...</span>
+      </div>
+      <div class="mesh-node" onclick="switchTab('mesh')" style="cursor:pointer;">
+        <div class="mesh-node-info">
+          <span class="mesh-node-title">⚡ Node.js + Redis 7</span>
+          <span class="mesh-node-sub">Port 5003 • Cache & Events</span>
+        </div>
+        <span class="mesh-badge up" id="mesh-events">בודק...</span>
+      </div>
+      <div class="mesh-node" onclick="switchTab('mcp')" style="cursor:pointer;">
+        <div class="mesh-node-info">
+          <span class="mesh-node-title">🤖 MCP Server Hub</span>
+          <span class="mesh-node-sub">Port 5004 • JSON-RPC 2.0</span>
+        </div>
+        <span class="mesh-badge up" id="mesh-mcp">בודק...</span>
+      </div>
+    </div>
+
+    <!-- Security Info Banner -->
+    <div class="security-notice" id="securityBanner">
+      <div id="securityBannerText">
+        🛡️ <strong>כל נתיבי ה-API מוגנים עם JSON Web Tokens (JWT)</strong>.
+      </div>
+      <div id="securityBannerAction"></div>
+    </div>
+
+    <!-- 6 KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon">📦</div>
+        <div class="kpi-title">סך מוצרים במסד</div>
+        <div class="kpi-value" id="kpiProducts">-</div>
+        <div class="kpi-sub">מוצרים פעילים בקטלוג</div>
+      </div>
+      <div class="kpi-card" id="kpiLowStockCard">
+        <div class="kpi-icon">⚠️</div>
+        <div class="kpi-title">התראות מלאי נמוך (≤5)</div>
+        <div class="kpi-value" id="kpiLowStock">-</div>
+        <div class="kpi-sub">מוצרים הדורשים חידוש מלאי</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-title">משתמשים רשומים</div>
+        <div class="kpi-value" id="kpiUsers">-</div>
+        <div class="kpi-sub">חשבונות מאומתים</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🛍️</div>
+        <div class="kpi-title">סך הזמנות</div>
+        <div class="kpi-value" id="kpiOrders">-</div>
+        <div class="kpi-sub">עסקאות במערכת</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-title">מחזור מכירות פעיל</div>
+        <div class="kpi-value" id="kpiRevenue">-</div>
+        <div class="kpi-sub">לא כולל הזמנות שבוטלו</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🏦</div>
+        <div class="kpi-title">שווי מלאי כולל</div>
+        <div class="kpi-value" id="kpiInventoryValue">-</div>
+        <div class="kpi-sub">מחיר × כמות במלאי</div>
+      </div>
+    </div>
+
+    <!-- Visual Analytics Row -->
+    <div class="analytics-grid">
+      <div class="chart-box">
+        <h3>
+          <span>📊 התפלגות מוצרים ושווי מלאי לפי קטגוריה</span>
+          <span style="font-size: 12px; color: #94a3b8; font-weight: 400;">זמן אמת</span>
+        </h3>
+        <div class="bar-list" id="categoryChart">
+          <div style="color: #64748b; font-size: 13px;">טוען נתוני קטגוריות...</div>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <h3>
+          <span>📈 פילוח הזמנות לפי סטטוס</span>
+          <span style="font-size: 12px; color: #94a3b8; font-weight: 400;" id="auditCountBadge">יומן: 0 פעולות</span>
+        </h3>
+        <div class="status-pills-grid" id="orderStatusChart">
+          <div class="status-stat-card">
+            <span class="st-name">✅ הושלם</span>
+            <span class="st-num" style="color: #34d399;" id="stCompleted">0</span>
+          </div>
+          <div class="status-stat-card">
+            <span class="st-name">🚚 נשלח</span>
+            <span class="st-num" style="color: #60a5fa;" id="stShipped">0</span>
+          </div>
+          <div class="status-stat-card">
+            <span class="st-name">⏳ ממתין</span>
+            <span class="st-num" style="color: #fbbf24;" id="stPending">0</span>
+          </div>
+          <div class="status-stat-card">
+            <span class="st-name">❌ בוטל</span>
+            <span class="st-num" style="color: #f87171;" id="stCancelled">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="main-grid">
+      <!-- Left Sidebar: Multi-Action Forms (Product / Order / User) -->
+      <div class="glass-card">
+        <div class="sidebar-tabs">
+          <button class="sidebar-tab active" id="sideTabProduct" onclick="switchSidebarForm('product')">➕ מוצר חדש</button>
+          <button class="sidebar-tab" id="sideTabOrder" onclick="switchSidebarForm('order')">🛍️ הזמנה חדשה</button>
+          <button class="sidebar-tab" id="sideTabUser" onclick="switchSidebarForm('user')">👤 משתמש חדש</button>
+        </div>
+
+        <!-- 1. Add Product Form -->
+        <form id="addProductForm">
+          <div class="card-head" style="margin-bottom: 14px;">
+            <h2>📦 הוספת מוצר לקטלוג</h2>
+          </div>
+          <div class="form-group">
+            <label>שם המוצר</label>
+            <input type="text" id="pName" placeholder="למשל: אוזניות גיימינג אלחוטיות" required>
+          </div>
+          <div class="form-group">
+            <label>קטגוריה</label>
+            <select id="pCategory">
+              <option value="אלקטרוניקה">אלקטרוניקה</option>
+              <option value="ציוד היקפי">ציוד היקפי</option>
+              <option value="מסכים">מסכים</option>
+              <option value="שמע">שמע</option>
+              <option value="גיימינג">גיימינג</option>
+              <option value="אחר">אחר</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>מחיר (₪)</label>
+              <input type="number" step="0.01" min="0" id="pPrice" placeholder="299.90" required>
+            </div>
+            <div class="form-group">
+              <label>כמות במלאי</label>
+              <input type="number" min="0" id="pStock" value="15" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" id="submitProductBtn">
+            <span>הוסף מוצר ל-PostgreSQL ✨</span>
+          </button>
+        </form>
+
+        <!-- 2. Create Order Form -->
+        <form id="addOrderForm" style="display: none;">
+          <div class="card-head" style="margin-bottom: 14px;">
+            <h2>🛍️ יצירת הזמנה חדשה</h2>
+          </div>
+          <div class="form-group">
+            <label>בחר לקוח</label>
+            <select id="oUserId" required></select>
+          </div>
+          <div class="form-group">
+            <label>בחר מוצר (ניכוי מלאי אוטומטי)</label>
+            <select id="oProductId" onchange="recalcOrderTotal()" required></select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>כמות יחידות</label>
+              <input type="number" id="oQuantity" min="1" value="1" oninput="recalcOrderTotal()" required>
+            </div>
+            <div class="form-group">
+              <label>סטטוס התחלתי</label>
+              <select id="oStatus">
+                <option value="pending">⏳ ממתין (Pending)</option>
+                <option value="shipped">🚚 נשלח (Shipped)</option>
+                <option value="completed">✅ הושלם (Completed)</option>
+              </select>
+            </div>
+          </div>
+          <div class="order-summary-box">
+            <span>סה״כ לתשלום:</span>
+            <strong id="oCalculatedTotal">₪0.00</strong>
+          </div>
+          <button type="submit" class="btn-submit" id="submitOrderBtn">
+            <span>בצע הזמנה ועדכן מלאי 🛒</span>
+          </button>
+        </form>
+
+        <!-- 3. Create User Form -->
+        <form id="addUserForm" style="display: none;">
+          <div class="card-head" style="margin-bottom: 14px;">
+            <h2>👤 הקמת משתמש חדש</h2>
+          </div>
+          <div class="form-group">
+            <label>שם מלא</label>
+            <input type="text" id="uName" placeholder="דניאל לוי" required>
+          </div>
+          <div class="form-group">
+            <label>כתובת אימייל</label>
+            <input type="email" id="uEmail" placeholder="daniel@example.com" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>סיסמה</label>
+              <input type="password" id="uPassword" placeholder="לפחות 6 תווים" value="password123" required>
+            </div>
+            <div class="form-group">
+              <label>הרשאה (Role)</label>
+              <select id="uRole">
+                <option value="USER">USER (משתמש)</option>
+                <option value="EDITOR">EDITOR (עורך)</option>
+                <option value="ADMIN">ADMIN (מנהל)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" id="submitUserBtn">
+            <span>שמור משתמש ב-PostgreSQL 🔐</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Right Panel: Live Data View + Search/Filter + Export -->
+      <div class="glass-card">
+        <div class="card-head">
+          <h2>📊 ניהול נתונים חיים מ-PostgreSQL</h2>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn-outline" onclick="exportCurrentData('csv')" title="ייצוא הטבלה הנוכחית לאקסל (CSV)">
+              📥 ייצוא CSV
+            </button>
+            <button class="btn-outline" onclick="exportCurrentData('json')" title="ייצוא הטבלה הנוכחית ל-JSON">
+              📄 ייצוא JSON
+            </button>
+            <button class="btn-outline" onclick="loadAllData()">
+              🔄 רענן
+            </button>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" id="tabProducts" onclick="switchTab('products')">📦 מוצרים (Products)</button>
+          <button class="tab-btn" id="tabOrders" onclick="switchTab('orders')">🛍️ הזמנות (Orders)</button>
+          <button class="tab-btn" id="tabUsers" onclick="switchTab('users')">👥 משתמשים (Users)</button>
+          <button class="tab-btn" id="tabAudit" onclick="switchTab('audit')">📜 יומן פעילות (Audit)</button>
+          <button class="tab-btn" id="tabMesh" onclick="switchTab('mesh')" style="border-color: rgba(59, 130, 246, 0.4); color: #93c5fd;">🌐 מיקרו-סרביסים ו-AI (FastAPI + Redis)</button>
+          <button class="tab-btn" id="tabMcp" onclick="switchTab('mcp')" style="border-color: rgba(0, 223, 216, 0.4); color: #00dfd8;">🤖 מרכז שליטה MCP (MCP Hub)</button>
+        </div>
+
+        <!-- Dynamic Filter Toolbar -->
+        <div class="filter-toolbar" id="filterToolbar">
+          <input type="text" class="search-input" id="searchInput" placeholder="🔍 חיפוש חופשי..." oninput="applyCurrentTabFilters()">
+
+          <!-- Products Specific Filters -->
+          <select class="filter-select" id="productCategoryFilter" onchange="applyCurrentTabFilters()">
+            <option value="ALL">כל הקטגוריות</option>
+            <option value="אלקטרוניקה">אלקטרוניקה</option>
+            <option value="ציוד היקפי">ציוד היקפי</option>
+            <option value="מסכים">מסכים</option>
+            <option value="שמע">שמע</option>
+            <option value="גיימינג">גיימינג</option>
+            <option value="אחר">אחר</option>
+          </select>
+
+          <label class="checkbox-filter" id="lowStockFilterWrap">
+            <input type="checkbox" id="lowStockOnlyCheck" onchange="applyCurrentTabFilters()">
+            <span>⚠️ מלאי נמוך בלבד (≤5)</span>
+          </label>
+
+          <!-- Orders Specific Filter -->
+          <select class="filter-select" id="orderStatusFilter" style="display: none;" onchange="applyCurrentTabFilters()">
+            <option value="ALL">כל הסטטוסים</option>
+            <option value="pending">⏳ ממתין (pending)</option>
+            <option value="shipped">🚚 נשלח (shipped)</option>
+            <option value="completed">✅ הושלם (completed)</option>
+            <option value="cancelled">❌ בוטל (cancelled)</option>
+          </select>
+
+          <!-- Users Specific Filter -->
+          <select class="filter-select" id="userRoleFilter" style="display: none;" onchange="applyCurrentTabFilters()">
+            <option value="ALL">כל התפקידים</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="EDITOR">EDITOR</option>
+            <option value="USER">USER</option>
+          </select>
+
+          <!-- Audit Specific Filter -->
+          <select class="filter-select" id="auditTypeFilter" style="display: none;" onchange="applyCurrentTabFilters()">
+            <option value="ALL">כל סוגי הפעולות</option>
+            <option value="PRODUCT">מוצרים (PRODUCT)</option>
+            <option value="ORDER">הזמנות (ORDER)</option>
+            <option value="USER">משתמשים (USER)</option>
+            <option value="AUTH">אבטחה והתחברות (AUTH)</option>
+          </select>
+        </div>
+
+        <div class="products-list" id="dataList">
+          <div class="loading-spin">טוען נתונים ממסד הנתונים...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. Auth Modal (Login / Register) -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+      <div class="modal-tabs">
+        <button class="modal-tab-btn active" id="modalTabLogin" onclick="switchAuthTab('login')">🔑 התחברות (Login)</button>
+        <button class="modal-tab-btn" id="modalTabRegister" onclick="switchAuthTab('register')">✨ הרשמה (Register)</button>
+      </div>
+      <div id="modalAlert" class="alert-msg"></div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>כתובת אימייל</label>
+          <input type="email" id="loginEmail" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>סיסמה</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-submit">
+          <span>התחבר וקבל JWT Token 🚀</span>
+        </button>
+        <div class="demo-box">
+          <div style="font-weight: 700; color: #a5b4fc;">⚡ כניסה מהירה לבדיקות (1-Click):</div>
+          <button type="button" class="btn-quick-login" onclick="quickFillLogin('idan@example.com', 'password123')">
+            👑 התחבר כמנהל מערכת (idan@example.com)
+          </button>
+          <button type="button" class="btn-quick-login" style="border-color: rgba(165, 180, 252, 0.4); color: #c7d2fe;" onclick="quickFillLogin('demo@example.com', 'password123')">
+            👤 התחבר כמשתמש רגיל (demo@example.com)
+          </button>
+        </div>
+      </form>
+
+      <form id="registerForm" style="display: none;" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>שם מלא</label>
+          <input type="text" id="regName" placeholder="ישראל ישראלי" required>
+        </div>
+        <div class="form-group">
+          <label>כתובת אימייל</label>
+          <input type="email" id="regEmail" placeholder="israel@example.com" required>
+        </div>
+        <div class="form-group">
+          <label>סיסמה</label>
+          <input type="password" id="regPassword" placeholder="לפחות 6 תווים" required>
+        </div>
+        <div class="form-group">
+          <label>תפקיד (Role)</label>
+          <select id="regRole">
+            <option value="USER">משתמש רגיל (USER)</option>
+            <option value="EDITOR">עורך תוכן (EDITOR)</option>
+            <option value="ADMIN">מנהל מערכת (ADMIN)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-submit">
+          <span>צור חשבון והתחבר אוטומטית ✨</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Edit Product Modal -->
+  <div class="modal-overlay" id="editProductModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeEditProductModal()">&times;</button>
+      <h3 style="margin-bottom: 18px; font-size: 19px;">✏️ עריכת מוצר</h3>
+      <form onsubmit="submitEditProduct(event)">
+        <input type="hidden" id="editProdId">
+        <div class="form-group">
+          <label>שם המוצר</label>
+          <input type="text" id="editProdName" required>
+        </div>
+        <div class="form-group">
+          <label>קטגוריה</label>
+          <select id="editProdCategory">
+            <option value="אלקטרוניקה">אלקטרוניקה</option>
+            <option value="ציוד היקפי">ציוד היקפי</option>
+            <option value="מסכים">מסכים</option>
+            <option value="שמע">שמע</option>
+            <option value="גיימינג">גיימינג</option>
+            <option value="אחר">אחר</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>מחיר (₪)</label>
+            <input type="number" step="0.01" min="0" id="editProdPrice" required>
+          </div>
+          <div class="form-group">
+            <label>מלאי</label>
+            <input type="number" min="0" id="editProdStock" required>
+          </div>
+        </div>
+        <button type="submit" class="btn-submit">💾 שמור שינויים במוצר</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Edit User Modal -->
+  <div class="modal-overlay" id="editUserModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeEditUserModal()">&times;</button>
+      <h3 style="margin-bottom: 18px; font-size: 19px;">👤 עריכת פרטי משתמש והרשאות</h3>
+      <form onsubmit="submitEditUser(event)">
+        <input type="hidden" id="editUserId">
+        <div class="form-group">
+          <label>שם מלא</label>
+          <input type="text" id="editUserName" required>
+        </div>
+        <div class="form-group">
+          <label>כתובת אימייל</label>
+          <input type="email" id="editUserEmail" required>
+        </div>
+        <div class="form-group">
+          <label>תפקיד והרשאה (Role)</label>
+          <select id="editUserRole">
+            <option value="USER">USER (משתמש רגיל)</option>
+            <option value="EDITOR">EDITOR (עורך)</option>
+            <option value="ADMIN">ADMIN (מנהל מערכת)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>איפוס סיסמה (השאר ריק כדי לא לשנות)</label>
+          <input type="password" id="editUserPassword" placeholder="הזן סיסמה חדשה במידת הצורך">
+        </div>
+        <button type="submit" class="btn-submit">💾 עדכן משתמש</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = '/api';
+    let currentTab = 'products';
+
+    // Cached datasets for instant filtering, dropdowns & CSV/JSON export
+    let cachedProducts = [];
+    let cachedOrders = [];
+    let cachedUsers = [];
+    let cachedAuditLogs = [];
+
+    // Auth State
+    let authToken = localStorage.getItem('jwt_token') || '';
+    let currentUser = null;
+    try {
+      currentUser = JSON.parse(localStorage.getItem('user_data') || 'null');
+    } catch (e) {
+      currentUser = null;
+    }
+
+    // Toast Helper
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      const icon = type === 'success' ? '✅' : (type === 'error' ? '⚠️' : 'ℹ️');
+      toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Interactive Sparkles Canvas
+    const canvas = document.getElementById('sparkles');
+    const ctx = canvas.getContext('2d');
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    const particles = [];
+    const colors = ['#ff0080', '#7928ca', '#00dfd8', '#ffdf00', '#ffffff'];
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 5 + 2;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 6 + 3;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.alpha = 1;
+        this.decay = Math.random() * 0.02 + 0.015;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.08;
+        this.alpha -= this.decay;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function createExplosion(x, y) {
+      for (let i = 0; i < 32; i++) {
+        particles.push(new Particle(x, y));
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.update();
+        p.draw();
+        if (p.alpha <= 0) particles.splice(i, 1);
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Check Backend Health
+    async function checkHealth() {
+      const badge = document.getElementById('statusBadge');
+      const text = document.getElementById('statusText');
+      try {
+        const res = await fetch(`${API_URL}/health`);
+        const data = await res.json();
+        if (data.status === 'success') {
+          badge.style.background = 'rgba(16, 185, 129, 0.15)';
+          badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+          badge.style.color = '#34d399';
+          text.textContent = `● PostgreSQL מחובר (${data.database})`;
+        } else {
+          throw new Error('Connection failed');
+        }
+      } catch (err) {
+        badge.style.background = 'rgba(239, 68, 68, 0.15)';
+        badge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+        badge.style.color = '#f87171';
+        text.textContent = '❌ אין חיבור ל-API';
+      }
+    }
+
+    // Auth-aware Fetch
+    async function authFetch(url, options = {}) {
+      const headers = { ...(options.headers || {}) };
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      options.headers = headers;
+
+      const res = await fetch(url, options);
+      if (res.status === 401) {
+        authToken = '';
+        currentUser = null;
+        localStorage.removeItem('jwt_token');
+        localStorage.removeItem('user_data');
+        updateAuthUI();
+        showLockedState();
+      }
+      return res;
+    }
+
+    function updateAuthUI() {
+      const headerSection = document.getElementById('authHeaderSection');
+      const banner = document.getElementById('securityBanner');
+      const bannerText = document.getElementById('securityBannerText');
+      const bannerAction = document.getElementById('securityBannerAction');
+
+      if (authToken && currentUser) {
+        headerSection.innerHTML = `
+          <div class="user-badge">
+            <span>👤</span>
+            <span>${currentUser.name || currentUser.email}</span>
+            <span class="role-tag">${currentUser.role || 'USER'}</span>
+            <span class="jwt-pill">🔐 JWT</span>
+            <button class="btn-logout" onclick="logout()">יציאה</button>
+          </div>
+        `;
+        banner.className = 'security-notice';
+        bannerText.innerHTML = `🛡️ <strong>מחובר כ-${currentUser.name} (${currentUser.role})</strong> — כל פעולות הניהול, היצירה, העריכה והאנליטיקה מתועדות ביומן ה-Audit.`;
+        bannerAction.innerHTML = ``;
+      } else {
+        headerSection.innerHTML = `
+          <button class="btn-auth-primary" onclick="openAuthModal('login')">
+            <span>🔐 התחברות / הרשמה</span>
+          </button>
+        `;
+        banner.className = 'security-notice guest';
+        bannerText.innerHTML = `🔒 <strong>המערכת מוגנת באמצעות JWT</strong> — התחבר כדי לצפות ולנהל מוצרים, הזמנות, משתמשים ויומן פעילות.`;
+        bannerAction.innerHTML = `
+          <button class="btn-outline" style="padding: 4px 12px; font-size: 12px; border-color: rgba(245, 158, 11, 0.4); color: #fde68a;" onclick="quickLoginAdmin()">
+            ⚡ התחבר מיידית כמנהל
+          </button>
+        `;
+      }
+    }
+
+    function showLockedState() {
+      const list = document.getElementById('dataList');
+      list.innerHTML = `
+        <div class="locked-state">
+          <h3>🔐 נדרש אימות JWT לצפייה בנתונים</h3>
+          <p>ה-API מאובטח ודורש כותרת Authorization: Bearer &lt;token&gt;.</p>
+          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <button class="btn-auth-primary" onclick="openAuthModal('login')">פתח טופס התחברות</button>
+            <button class="btn-outline" onclick="quickLoginAdmin()">⚡ כניסה מהירה כמנהל (Admin)</button>
+          </div>
+        </div>
+      `;
+      ['kpiProducts', 'kpiLowStock', 'kpiUsers', 'kpiOrders', 'kpiRevenue', 'kpiInventoryValue'].forEach(id => {
+        document.getElementById(id).textContent = '🔒';
+      });
+    }
+
+    // Switch Sidebar Action Form
+    function switchSidebarForm(mode) {
+      document.querySelectorAll('.sidebar-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById('addProductForm').style.display = 'none';
+      document.getElementById('addOrderForm').style.display = 'none';
+      document.getElementById('addUserForm').style.display = 'none';
+
+      if (mode === 'product') {
+        document.getElementById('sideTabProduct').classList.add('active');
+        document.getElementById('addProductForm').style.display = 'block';
+      } else if (mode === 'order') {
+        document.getElementById('sideTabOrder').classList.add('active');
+        document.getElementById('addOrderForm').style.display = 'block';
+        populateOrderDropdowns();
+      } else if (mode === 'user') {
+        document.getElementById('sideTabUser').classList.add('active');
+        document.getElementById('addUserForm').style.display = 'block';
+      }
+    }
+
+    function populateOrderDropdowns() {
+      const userSelect = document.getElementById('oUserId');
+      const prodSelect = document.getElementById('oProductId');
+
+      if (cachedUsers.length > 0) {
+        userSelect.innerHTML = cachedUsers.map(u =>
+          `<option value="${u.id}">${u.name} (${u.email})</option>`
+        ).join('');
+      } else {
+        userSelect.innerHTML = `<option value="">טוען משתמשים...</option>`;
+      }
+
+      if (cachedProducts.length > 0) {
+        prodSelect.innerHTML = cachedProducts.map(p =>
+          `<option value="${p.id}" data-price="${p.price}" data-stock="${p.stock}" ${p.stock <= 0 ? 'disabled' : ''}>
+            ${p.name} — ₪${Number(p.price).toFixed(2)} (מלאי: ${p.stock})
+          </option>`
+        ).join('');
+      } else {
+        prodSelect.innerHTML = `<option value="">אין מוצרים זמינים</option>`;
+      }
+      recalcOrderTotal();
+    }
+
+    function recalcOrderTotal() {
+      const prodSelect = document.getElementById('oProductId');
+      const qtyInput = document.getElementById('oQuantity');
+      const totalEl = document.getElementById('oCalculatedTotal');
+      if (!prodSelect || !prodSelect.selectedOptions.length) {
+        totalEl.textContent = '₪0.00';
+        return;
+      }
+      const opt = prodSelect.selectedOptions[0];
+      const price = parseFloat(opt.getAttribute('data-price') || '0');
+      const qty = Math.max(1, parseInt(qtyInput.value || '1', 10));
+      const total = price * qty;
+      totalEl.textContent = '₪' + total.toLocaleString('he-IL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Load Stats & Analytics Charts
+    async function loadStats() {
+      if (!authToken) return;
+      try {
+        const res = await authFetch(`${API_URL}/stats`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.status === 'success') {
+          const s = data.stats;
+          document.getElementById('kpiProducts').textContent = s.products;
+          document.getElementById('kpiLowStock').textContent = s.low_stock_count;
+          document.getElementById('kpiUsers').textContent = s.users;
+          document.getElementById('kpiOrders').textContent = s.orders;
+          document.getElementById('kpiRevenue').textContent = '₪' + Number(s.total_revenue).toLocaleString();
+          document.getElementById('kpiInventoryValue').textContent = '₪' + Number(s.inventory_value).toLocaleString();
+          document.getElementById('auditCountBadge').textContent = `יומן: ${s.audit_count || 0} פעולות`;
+
+          const lowCard = document.getElementById('kpiLowStockCard');
+          if (s.low_stock_count > 0) {
+            lowCard.classList.add('alert-card');
+          } else {
+            lowCard.classList.remove('alert-card');
+          }
+
+          // Render Category Chart
+          const catContainer = document.getElementById('categoryChart');
+          const categories = s.categories || [];
+          if (categories.length > 0) {
+            const maxVal = Math.max(...categories.map(c => Number(c.value) || 1), 1);
+            catContainer.innerHTML = categories.map(c => {
+              const pct = Math.max(8, Math.round((Number(c.value) / maxVal) * 100));
+              return `
+                <div class="bar-item">
+                  <div class="bar-label">
+                    <span>${c.category} (${c.count} מוצרים, ${c.stock} יח')</span>
+                    <span>₪${Number(c.value).toLocaleString()}</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width: ${pct}%;"></div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          } else {
+            catContainer.innerHTML = `<div style="color:#64748b;font-size:13px;">אין נתוני קטגוריות</div>`;
+          }
+
+          // Render Order Status Breakdown
+          const obs = s.orders_by_status || {};
+          document.getElementById('stCompleted').textContent = obs.completed || 0;
+          document.getElementById('stShipped').textContent = obs.shipped || 0;
+          document.getElementById('stPending').textContent = obs.pending || 0;
+          document.getElementById('stCancelled').textContent = obs.cancelled || 0;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Load Datasets
+    async function loadProducts() {
+      if (!authToken) { showLockedState(); return; }
+      try {
+        const res = await authFetch(`${API_URL}/products`);
+        if (res.status === 401) return;
+        const json = await res.json();
+        cachedProducts = json.data || [];
+        populateOrderDropdowns();
+        if (currentTab === 'products') renderProductsList();
+      } catch (err) {
+        if (currentTab === 'products') {
+          document.getElementById('dataList').innerHTML = '<div class="loading-spin">שגיאה בטעינת מוצרים</div>';
+        }
+      }
+    }
+
+    async function loadOrders() {
+      if (!authToken) { showLockedState(); return; }
+      try {
+        const res = await authFetch(`${API_URL}/orders`);
+        if (res.status === 401) return;
+        const json = await res.json();
+        cachedOrders = json.data || [];
+        if (currentTab === 'orders') renderOrdersList();
+      } catch (err) {
+        if (currentTab === 'orders') {
+          document.getElementById('dataList').innerHTML = '<div class="loading-spin">שגיאה בטעינת הזמנות</div>';
+        }
+      }
+    }
+
+    async function loadUsers() {
+      if (!authToken) { showLockedState(); return; }
+      try {
+        const res = await authFetch(`${API_URL}/users`);
+        if (res.status === 401) return;
+        const json = await res.json();
+        cachedUsers = json.data || [];
+        populateOrderDropdowns();
+        if (currentTab === 'users') renderUsersList();
+      } catch (err) {
+        if (currentTab === 'users') {
+          document.getElementById('dataList').innerHTML = '<div class="loading-spin">שגיאה בטעינת משתמשים</div>';
+        }
+      }
+    }
+
+    async function loadAuditLogs() {
+      if (!authToken) { showLockedState(); return; }
+      try {
+        const res = await authFetch(`${API_URL}/audit`);
+        if (res.status === 401) return;
+        const json = await res.json();
+        cachedAuditLogs = json.data || [];
+        if (currentTab === 'audit') renderAuditList();
+      } catch (err) {
+        if (currentTab === 'audit') {
+          document.getElementById('dataList').innerHTML = '<div class="loading-spin">שגיאה בטעינת יומן פעילות</div>';
+        }
+      }
+    }
+
+    // Renderers with Instant Filtering
+    function applyCurrentTabFilters() {
+      if (currentTab === 'products') renderProductsList();
+      else if (currentTab === 'orders') renderOrdersList();
+      else if (currentTab === 'users') renderUsersList();
+      else if (currentTab === 'audit') renderAuditList();
+    }
+
+    function renderProductsList() {
+      const list = document.getElementById('dataList');
+      const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      const cat = document.getElementById('productCategoryFilter').value;
+      const lowOnly = document.getElementById('lowStockOnlyCheck').checked;
+
+      const filtered = cachedProducts.filter(p => {
+        if (q && !(p.name || '').toLowerCase().includes(q) && !(p.category || '').toLowerCase().includes(q)) return false;
+        if (cat !== 'ALL' && p.category !== cat) return false;
+        if (lowOnly && p.stock > 5) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="loading-spin">לא נמצאו מוצרים התואמים לסינון</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(p => {
+        let stockBadge = '';
+        if (p.stock === 0) {
+          stockBadge = `<span class="out-stock-badge">❌ אזל מהמלאי</span>`;
+        } else if (p.stock <= 5) {
+          stockBadge = `<span class="low-stock-badge">⚠️ מלאי נמוך (${p.stock})</span>`;
+        }
+        return `
+          <div class="product-row">
+            <div class="prod-info">
+              <h4>
+                <span>${p.name}</span>
+                ${stockBadge}
+              </h4>
+              <span class="prod-category">${p.category}</span>
+            </div>
+            <div class="prod-meta">
+              <div class="stock-control" title="עדכון מלאי מהיר">
+                <button class="btn-stock-step" onclick="quickAdjustStock(${p.id}, -1)">-</button>
+                <span>מלאי: <strong>${p.stock}</strong></span>
+                <button class="btn-stock-step" onclick="quickAdjustStock(${p.id}, 1)">+</button>
+              </div>
+              <span class="prod-price">₪${Number(p.price).toFixed(2)}</span>
+              <button class="btn-edit" onclick='openEditProductModal(${JSON.stringify(p)})'>✏️ ערוך</button>
+              <button class="btn-del" onclick="deleteProduct(${p.id})">🗑️ מחק</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderOrdersList() {
+      const list = document.getElementById('dataList');
+      const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      const stFilter = document.getElementById('orderStatusFilter').value;
+
+      const filtered = cachedOrders.filter(o => {
+        if (stFilter !== 'ALL' && (o.status || '').toLowerCase() !== stFilter.toLowerCase()) return false;
+        if (q) {
+          const hay = `${o.id} ${o.user_name || ''} ${o.product_name || ''} ${o.status || ''}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="loading-spin">לא נמצאו הזמנות התואמות לסינון</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(o => {
+        const st = (o.status || 'pending').toLowerCase();
+        const dateStr = o.order_date ? new Date(o.order_date).toLocaleString('he-IL') : '';
+        return `
+          <div class="product-row">
+            <div class="prod-info">
+              <h4>
+                <span>הזמנה #${o.id} — ${o.user_name || 'לקוח אורח'}</span>
+                <span class="prod-category">📦 ${o.product_name || 'הזמנה כללית'} (x${o.quantity || 1})</span>
+              </h4>
+              <span style="font-size: 12px; color: #94a3b8;">🕒 ${dateStr} ${o.user_email ? '• ' + o.user_email : ''}</span>
+            </div>
+            <div class="prod-meta">
+              <select class="order-status-select ${st}" onchange="updateOrderStatus(${o.id}, this.value)">
+                <option value="pending" ${st === 'pending' ? 'selected' : ''}>⏳ ממתין (Pending)</option>
+                <option value="shipped" ${st === 'shipped' ? 'selected' : ''}>🚚 נשלח (Shipped)</option>
+                <option value="completed" ${st === 'completed' ? 'selected' : ''}>✅ הושלם (Completed)</option>
+                <option value="cancelled" ${st === 'cancelled' ? 'selected' : ''}>❌ בוטל (Cancelled)</option>
+              </select>
+              <span class="prod-price">₪${Number(o.total_amount).toFixed(2)}</span>
+              <button class="btn-del" onclick="deleteOrder(${o.id})">🗑️ מחק</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderUsersList() {
+      const list = document.getElementById('dataList');
+      const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      const roleFilter = document.getElementById('userRoleFilter').value;
+
+      const filtered = cachedUsers.filter(u => {
+        if (roleFilter !== 'ALL' && (u.role || 'USER').toUpperCase() !== roleFilter) return false;
+        if (q && !(u.name || '').toLowerCase().includes(q) && !(u.email || '').toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="loading-spin">לא נמצאו משתמשים התואמים לסינון</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(u => `
+        <div class="product-row">
+          <div class="prod-info">
+            <h4>
+              <span>${u.name}</span>
+              <span class="role-tag">${u.role || 'USER'}</span>
+            </h4>
+            <span class="prod-category">${u.email}</span>
+          </div>
+          <div class="prod-meta">
+            <span style="font-size: 13px; color: #94a3b8;">ID: #${u.id}</span>
+            <button class="btn-edit" onclick='openEditUserModal(${JSON.stringify(u)})'>✏️ ערוך</button>
+            <button class="btn-del" onclick="deleteUser(${u.id})">🗑️ מחק</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAuditList() {
+      const list = document.getElementById('dataList');
+      const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      const typeFilter = document.getElementById('auditTypeFilter').value;
+
+      const filtered = cachedAuditLogs.filter(a => {
+        if (typeFilter !== 'ALL' && (a.entityType || '').toUpperCase() !== typeFilter) return false;
+        if (q) {
+          const hay = `${a.action || ''} ${a.details || ''} ${a.performedBy || ''}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="loading-spin">אין רשומות ביומן הפעילות</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(a => {
+        const timeStr = a.createdAt ? new Date(a.createdAt).toLocaleString('he-IL') : '';
+        return `
+          <div class="product-row">
+            <div class="prod-info">
+              <h4>
+                <span class="role-tag" style="background: rgba(59, 130, 246, 0.35); border: 1px solid rgba(59,130,246,0.5);">${a.action}</span>
+                <span>${a.details}</span>
+              </h4>
+              <span style="font-size: 12px; color: #94a3b8;">👤 בוצע ע״י: <strong>${a.performedBy || 'מערכת'}</strong> • 🕒 ${timeStr}</span>
+            </div>
+            <div class="prod-meta">
+              <span class="prod-category">${a.entityType}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Switch Data Explorer Tab
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('searchInput').value = '';
+
+      const toolbar = document.getElementById('filterToolbar');
+      toolbar.style.display = (tab === 'mesh' || tab === 'mcp') ? 'none' : 'flex';
+
+      // Hide all tab-specific filters first
+      document.getElementById('productCategoryFilter').style.display = 'none';
+      document.getElementById('lowStockFilterWrap').style.display = 'none';
+      document.getElementById('orderStatusFilter').style.display = 'none';
+      document.getElementById('userRoleFilter').style.display = 'none';
+      document.getElementById('auditTypeFilter').style.display = 'none';
+
+      if (tab === 'products') {
+        document.getElementById('tabProducts').classList.add('active');
+        document.getElementById('productCategoryFilter').style.display = 'inline-block';
+        document.getElementById('lowStockFilterWrap').style.display = 'inline-flex';
+        loadProducts();
+      } else if (tab === 'orders') {
+        document.getElementById('tabOrders').classList.add('active');
+        document.getElementById('orderStatusFilter').style.display = 'inline-block';
+        loadOrders();
+      } else if (tab === 'users') {
+        document.getElementById('tabUsers').classList.add('active');
+        document.getElementById('userRoleFilter').style.display = 'inline-block';
+        loadUsers();
+      } else if (tab === 'audit') {
+        document.getElementById('tabAudit').classList.add('active');
+        document.getElementById('auditTypeFilter').style.display = 'inline-block';
+        loadAuditLogs();
+      } else if (tab === 'mesh') {
+        document.getElementById('tabMesh').classList.add('active');
+        loadMicroservicesView();
+      } else if (tab === 'mcp') {
+        document.getElementById('tabMcp').classList.add('active');
+        loadMcpHubView();
+      }
+    }
+
+    // Live Microservices Mesh Health Polling
+    async function checkMeshStatus() {
+      try {
+        const res = await fetch(`${API_URL}/mesh/status`);
+        const data = await res.json();
+        if (data.status === 'success' && Array.isArray(data.services)) {
+          data.services.forEach(svc => {
+            const badge = document.getElementById(`mesh-${svc.id}`);
+            if (badge) {
+              if (svc.status === 'UP') {
+                badge.className = 'mesh-badge up';
+                badge.textContent = `ONLINE • ${svc.latency_ms >= 0 ? svc.latency_ms + 'ms' : 'OK'}`;
+              } else {
+                badge.className = 'mesh-badge down';
+                badge.textContent = 'OFFLINE';
+              }
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('Mesh status check failed', e);
+      }
+    }
+
+    let cachedAiData = null;
+    let selectedCurrency = 'ILS';
+
+    async function loadMicroservicesView() {
+      if (!authToken) { showLockedState(); return; }
+      const list = document.getElementById('dataList');
+      list.innerHTML = '<div class="loading-spin">מתקשר עם מיקרו-סרביס Python FastAPI (:5002) ו-Node.js Redis (:5003)...</div>';
+
+      try {
+        const [aiRes, evRes] = await Promise.all([
+          authFetch(`${API_URL}/mesh/analytics`).then(r => r.json()).catch(() => ({ status: 'error' })),
+          authFetch(`${API_URL}/mesh/events`).then(r => r.json()).catch(() => ({ status: 'error' }))
+        ]);
+
+        cachedAiData = aiRes;
+        const currMap = (aiRes && aiRes.currencies) || {};
+        const cur = currMap[selectedCurrency] || { symbol: '₪', total_revenue: 0, inventory_value: 0, avg_order_value: 0 };
+        const recs = (aiRes && aiRes.recommendations) || [];
+        const events = (evRes && evRes.events) || [];
+        const bench = (evRes && evRes.metrics && evRes.metrics.last_benchmark) || null;
+
+        list.innerHTML = `
+          <!-- 1. Python FastAPI AI & Currency Microservice -->
+          <div class="hub-section">
+            <h3>
+              <span>🐍 מיקרו-סרביס Python FastAPI AI & Currency (פורט 5002)</span>
+              <div class="currency-pills">
+                ${['ILS', 'USD', 'EUR', 'GBP'].map(c => `
+                  <button class="curr-btn ${selectedCurrency === c ? 'active' : ''}" onclick="changeAiCurrency('${c}')">
+                    ${c === 'ILS' ? '₪ ILS' : c === 'USD' ? '$ USD' : c === 'EUR' ? '€ EUR' : '£ GBP'}
+                  </button>
+                `).join('')}
+              </div>
+            </h3>
+
+            <div class="kpi-grid" style="margin-bottom: 14px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));">
+              <div class="kpi-card" style="padding: 14px;">
+                <div class="kpi-title">מחזור מכירות (${selectedCurrency})</div>
+                <div class="kpi-value" style="font-size: 22px; color: #34d399;">${cur.symbol}${Number(cur.total_revenue || 0).toLocaleString()}</div>
+              </div>
+              <div class="kpi-card" style="padding: 14px;">
+                <div class="kpi-title">שווי מלאי כולל (${selectedCurrency})</div>
+                <div class="kpi-value" style="font-size: 22px; color: #60a5fa;">${cur.symbol}${Number(cur.inventory_value || 0).toLocaleString()}</div>
+              </div>
+              <div class="kpi-card" style="padding: 14px;">
+                <div class="kpi-title">סל קנייה ממוצע (${selectedCurrency})</div>
+                <div class="kpi-value" style="font-size: 22px; color: #f472b6;">${cur.symbol}${Number(cur.avg_order_value || 0).toLocaleString()}</div>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${recs.map(r => `
+                <div class="product-row" style="padding: 12px 15px;">
+                  <div class="prod-info">
+                    <h4><span>${r.icon}</span> <span>${r.title}</span></h4>
+                    <span style="font-size: 13px; color: #cbd5e1;">${r.description}</span>
+                  </div>
+                  <span class="prod-category">Python AI</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- 2. Node.js + Redis 7 Cache & Event Bus Microservice -->
+          <div class="hub-section">
+            <h3>
+              <span>⚡ מיקרו-סרביס Node.js + Redis 7 Cache & Event Bus (פורט 5003 + 6379)</span>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-auth-primary" style="padding: 6px 14px; font-size: 12.5px;" onclick="runRedisBenchmark()">
+                  ⚡ סנכרן ובדוק מהירות Redis מול Postgres
+                </button>
+                <button class="btn-outline" style="padding: 6px 12px; font-size: 12.5px;" onclick="broadcastCustomRedisEvent()">
+                  📢 שדר התראה ל-Redis
+                </button>
+              </div>
+            </h3>
+
+            ${bench ? `
+              <div class="order-summary-box" style="margin-bottom: 12px;">
+                <span>🚀 <strong>תוצאות מבחן מהירות אחרון:</strong> שליפה מ-PostgreSQL: <code>${bench.postgres_query_ms}ms</code> | שליפה מ-Redis Cache: <code>${bench.redis_cache_read_ms}ms</code></span>
+                <strong>פי ${bench.speedup_factor} מהיר יותר!</strong>
+              </div>
+            ` : ''}
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${events.map(ev => `
+                <div class="product-row" style="padding: 11px 15px;">
+                  <div class="prod-info">
+                    <h4>
+                      <span class="role-tag" style="background: rgba(16, 185, 129, 0.25); color: #34d399;">${ev.type}</span>
+                      <span>${ev.title}</span>
+                    </h4>
+                    <span style="font-size: 12.5px; color: #94a3b8;">${ev.message} • 🕒 ${new Date(ev.timestamp).toLocaleTimeString('he-IL')}</span>
+                  </div>
+                  <span class="prod-category">${ev.source}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        list.innerHTML = '<div class="loading-spin">שגיאה בטעינת נתוני המיקרו-סרביסים</div>';
+      }
+    }
+
+    function changeAiCurrency(curr) {
+      selectedCurrency = curr;
+      loadMicroservicesView();
+    }
+
+    async function runRedisBenchmark() {
+      try {
+        const res = await authFetch(`${API_URL}/mesh/cache-sync`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success' && data.benchmark) {
+          showToast(`סנכרון Redis הושלם! פי ${data.benchmark.speedup_factor} מהיר יותר מ-Postgres`);
+          loadMicroservicesView();
+        }
+      } catch (e) {
+        showToast('שגיאה בהרצת סנכרון Redis', 'error');
+      }
+    }
+
+    async function broadcastCustomRedisEvent() {
+      const msg = prompt('הזן הודעת התראה לשידור חי ב-Redis Event Bus:', 'בדיקת עומסים וזמינות מיקרו-סרביסים עברה בהצלחה!');
+      if (!msg) return;
+      try {
+        const res = await authFetch(`${API_URL}/mesh/events/emit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'ADMIN_BROADCAST',
+            severity: 'info',
+            title: 'שידור מנהל מערכת',
+            message: msg,
+            source: currentUser ? currentUser.name : 'Admin'
+          })
+        });
+        if (res.ok) {
+          showToast('ההתראה שודרה בהצלחה ל-Redis Event Bus!');
+          loadMicroservicesView();
+        }
+      } catch (e) {
+        showToast('שגיאה בשידור התראה ל-Redis', 'error');
+      }
+    }
+
+    // MCP Live Hub View & Interactive Tool Runner
+    let mcpToolsCatalog = [];
+    let selectedMcpTool = 'postgres_query_readonly';
+
+    async function loadMcpHubView() {
+      if (!authToken) { showLockedState(); return; }
+      const list = document.getElementById('dataList');
+      list.innerHTML = '<div class="loading-spin">טוען קטלוג כלים משרת ה-MCP (פורט 5004)...</div>';
+
+      try {
+        const res = await authFetch(`${API_URL}/mesh/mcp/tools`);
+        const data = await res.json();
+        mcpToolsCatalog = data.tools || [];
+        renderMcpHubUI();
+      } catch (e) {
+        list.innerHTML = '<div class="loading-spin">שגיאה בחיבור לשרת ה-MCP (פורט 5004)</div>';
+      }
+    }
+
+    function renderMcpHubUI() {
+      const list = document.getElementById('dataList');
+      const currentToolObj = mcpToolsCatalog.find(t => t.name === selectedMcpTool) || mcpToolsCatalog[0] || {};
+      const sampleJson = JSON.stringify(currentToolObj.sampleArgs || {}, null, 2);
+
+      list.innerHTML = `
+        <div class="hub-section">
+          <h3>
+            <span>🤖 שרת Model Context Protocol פעיל (<code>my-postgres-hub</code> בפורט 5004)</span>
+            <span class="jwt-pill">מחובר ל-Antigravity (mcp_config.json)</span>
+          </h3>
+          <p style="font-size: 13.5px; color: #cbd5e1; margin-bottom: 14px;">
+            בחר אחד מ-8 כלי ה-MCP הרשומים למטה כדי להריץ שאילתות SQL חכמות, לבדוק את רשת המיקרו-סרביסים או לעדכן מלאי דרך פרוטוקול JSON-RPC 2.0:
+          </p>
+
+          <div class="mcp-tools-grid">
+            ${mcpToolsCatalog.map(t => `
+              <div class="mcp-tool-card ${t.name === currentToolObj.name ? 'selected' : ''}" onclick="selectMcpTool('${t.name}')">
+                <code>⚡ ${t.name}</code>
+                <p>${t.title}</p>
+              </div>
+            `).join('')}
+          </div>
+
+          <div style="margin-top: 12px;">
+            <label style="display:block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #00dfd8;">
+              פרמטרים להרצת הכלי הנבחר (<code>${currentToolObj.name || ''}</code>) בפורמט JSON:
+            </label>
+            <textarea id="mcpArgsInput" class="code-area">${sampleJson}</textarea>
+            <button class="btn-submit" onclick="executeSelectedMcpTool()" style="margin-bottom: 14px;">
+              <span>🚀 הרץ כלי MCP מול שרת ה-PostgreSQL והמיקרו-סרביסים</span>
+            </button>
+          </div>
+
+          <div>
+            <label style="display:block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #94a3b8;">
+              פלט JSON-RPC משרת ה-MCP:
+            </label>
+            <pre class="mcp-output-pre" id="mcpOutputBox">// לחץ על "הרץ כלי MCP" כדי לראות את התשובה החיה כאן...</pre>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectMcpTool(name) {
+      selectedMcpTool = name;
+      renderMcpHubUI();
+    }
+
+    async function executeSelectedMcpTool() {
+      const outBox = document.getElementById('mcpOutputBox');
+      const rawArgs = document.getElementById('mcpArgsInput').value;
+      let parsedArgs = {};
+      try {
+        parsedArgs = rawArgs.trim() ? JSON.parse(rawArgs) : {};
+      } catch (e) {
+        showToast('שגיאת תחביר ב-JSON של הפרמטרים', 'error');
+        return;
+      }
+
+      outBox.textContent = '⏳ מריץ כלי MCP מול השרת...';
+      try {
+        const res = await authFetch(`${API_URL}/mesh/mcp/execute`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: selectedMcpTool, arguments: parsedArgs })
+        });
+        const data = await res.json();
+        outBox.textContent = JSON.stringify(data, null, 2);
+        if (data.status === 'success') {
+          showToast(`כלי ה-MCP "${selectedMcpTool}" הורץ בהצלחה!`);
+          loadStats();
+        } else {
+          showToast(data.message || 'שגיאה בהרצת כלי MCP', 'error');
+        }
+      } catch (e) {
+        outBox.textContent = 'שגיאת תקשורת: ' + e.message;
+      }
+    }
+
+    // Export Current Tab Data to CSV or JSON
+    function exportCurrentData(format) {
+      let data = [];
+      let filename = `postgres_${currentTab}_${new Date().toISOString().slice(0,10)}`;
+      if (currentTab === 'products') data = cachedProducts;
+      else if (currentTab === 'orders') data = cachedOrders;
+      else if (currentTab === 'users') data = cachedUsers;
+      else if (currentTab === 'audit') data = cachedAuditLogs;
+
+      if (!data || data.length === 0) {
+        showToast('אין נתונים לייצוא בלשונית זו', 'info');
+        return;
+      }
+
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
+        downloadBlob(blob, `${filename}.json`);
+        showToast(`קובץ ה-JSON יורד בהצלחה (${data.length} רשומות)`);
+      } else if (format === 'csv') {
+        const headers = Object.keys(data[0]);
+        const csvRows = [
+          headers.join(','),
+          ...data.map(row => headers.map(fieldName => {
+            const val = row[fieldName] === null || row[fieldName] === undefined ? '' : String(row[fieldName]);
+            return `"${val.replace(/"/g, '""')}"`;
+          }).join(','))
+        ];
+        // Add UTF-8 BOM (\uFEFF) so Excel opens Hebrew characters properly
+        const blob = new Blob(['\uFEFF' + csvRows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+        downloadBlob(blob, `${filename}.csv`);
+        showToast(`קובץ ה-CSV (Excel) יורד בהצלחה (${data.length} רשומות)`);
+      }
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // CRUD Operations: Products
+    document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!authToken) { openAuthModal('login'); return; }
+
+      const btn = document.getElementById('submitProductBtn');
+      const rect = btn.getBoundingClientRect();
+      createExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+      const newProd = {
+        name: document.getElementById('pName').value,
+        category: document.getElementById('pCategory').value,
+        price: parseFloat(document.getElementById('pPrice').value),
+        stock: parseInt(document.getElementById('pStock').value, 10),
+      };
+
+      try {
+        const res = await authFetch(`${API_URL}/products`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newProd),
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+          document.getElementById('pName').value = '';
+          document.getElementById('pPrice').value = '';
+          showToast('המוצר נוסף בהצלחה למסד הנתונים!');
+          loadAllData();
+        } else {
+          showToast(result.message || 'שגיאה בהוספת מוצר', 'error');
+        }
+      } catch (err) {
+        showToast('שגיאה בהוספת מוצר ל-DB', 'error');
+      }
+    });
+
+    async function quickAdjustStock(id, delta) {
+      if (!authToken) { openAuthModal('login'); return; }
+      try {
+        const res = await authFetch(`${API_URL}/products/${id}/stock`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ delta })
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+          showToast(`המלאי של "${result.data.name}" עודכן ל-${result.data.stock}`);
+          loadAllData();
+        }
+      } catch (e) {
+        showToast('שגיאה בעדכון מלאי', 'error');
+      }
+    }
+
+    function openEditProductModal(prod) {
+      document.getElementById('editProdId').value = prod.id;
+      document.getElementById('editProdName').value = prod.name;
+      document.getElementById('editProdCategory').value = prod.category;
+      document.getElementById('editProdPrice').value = prod.price;
+      document.getElementById('editProdStock').value = prod.stock;
+      document.getElementById('editProductModal').classList.add('active');
+    }
+
+    function closeEditProductModal() {
+      document.getElementById('editProductModal').classList.remove('active');
+    }
+
+    async function submitEditProduct(e) {
+      e.preventDefault();
+      const id = document.getElementById('editProdId').value;
+      const payload = {
+        name: document.getElementById('editProdName').value,
+        category: document.getElementById('editProdCategory').value,
+        price: parseFloat(document.getElementById('editProdPrice').value),
+        stock: parseInt(document.getElementById('editProdStock').value, 10)
+      };
+      try {
+        const res = await authFetch(`${API_URL}/products/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+          closeEditProductModal();
+          showToast('המוצר עודכן בהצלחה!');
+          loadAllData();
+        } else {
+          showToast(result.message || 'שגיאה בעדכון מוצר', 'error');
+        }
+      } catch (err) {
+        showToast('שגיאת תקשורת בעדכון מוצר', 'error');
+      }
+    }
+
+    async function deleteProduct(id) {
+      if (!authToken) { openAuthModal('login'); return; }
+      if (!confirm('האם למחוק מוצר זה ממסד הנתונים?')) return;
+      try {
+        const res = await authFetch(`${API_URL}/products/${id}`, { method: 'DELETE' });
+        const json = await res.json();
+        if (res.ok) {
+          showToast('המוצר נמחק בהצלחה');
+          loadAllData();
+        } else {
+          showToast(json.message || 'שגיאה במחיקה', 'error');
+        }
+      } catch (err) {
+        showToast('שגיאה במחיקת מוצר', 'error');
+      }
+    }
+
+    // CRUD Operations: Orders
+    document.getElementById('addOrderForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!authToken) { openAuthModal('login'); return; }
+
+      const btn = document.getElementById('submitOrderBtn');
+      const rect = btn.getBoundingClientRect();
+      createExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+      const payload = {
+        userId: parseInt(document.getElementById('oUserId').value, 10),
+        productId: parseInt(document.getElementById('oProductId').value, 10),
+        quantity: parseInt(document.getElementById('oQuantity').value, 10),
+        status: document.getElementById('oStatus').value
+      };
+
+      try {
+        const res = await authFetch(`${API_URL}/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+          document.getElementById('oQuantity').value = 1;
+          showToast('ההזמנה נוצרה בהצלחה והמלאי עודכן!');
+          switchTab('orders');
+          loadAllData();
+        } else {
+          showToast(result.message || 'שגיאה ביצירת הזמנה', 'error');
+        }
+      } catch (err) {
+        showToast('שגיאה ביצירת הזמנה', 'error');
+      }
+    });
+
+    async function updateOrderStatus(orderId, newStatus) {
+      try {
+        const res = await authFetch(`${API_URL}/orders/${orderId}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+          showToast(`סטטוס הזמנה #${orderId} עודכן ל-${newStatus}`);
+          loadAllData();
+        } else {
+          showToast(result.message || 'שגיאה בעדכון סטטוס', 'error');
+          loadOrders();
+        }
+      } catch (err) {
+        showToast('שגיאה בעדכון סטטוס הזמנה', 'error');
+      }
+    }
+
+    async function deleteOrder(id) {
+      if (!confirm('האם למחוק הזמנה זו? (המלאי ישוחזר אוטומטית)')) return;
+      try {
+        const res = await authFetch(`${API_URL}/orders/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('ההזמנה נמחקה בהצלחה');
+          loadAllData();
+        }
+      } catch (err) {
+        showToast('שגיאה במחיקת הזמנה', 'error');
+      }
+    }
+
+    // CRUD Operations: Users
+    document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!authToken) { openAuthModal('login'); return; }
+
+      const btn = document.getElementById('submitUserBtn');
+      const rect = btn.getBoundingClientRect();
+      createExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+      const payload = {
+        name: document.getElementById('uName').value,
+        email: document.getElementById('uEmail').value,
+        password: document.getElementById('uPassword').value,
+        role: document.getElementById('uRole').value
+      };
+
+      try {
+        const res = await authFetch(`${API_URL}/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+          document.getElementById('uName').value = '';
+          document.getElementById('uEmail').value = '';
+          showToast('המשתמש נוסף בהצלחה!');
+          switchTab('users');
+          loadAllData();
+        } else {
+          showToast(result.message || 'שגיאה ביצירת משתמש', 'error');
+        }
+      } catch (err) {
+        showToast('שגיאה ביצירת משתמש', 'error');
+      }
+    });
+
+    function openEditUserModal(user) {
+      document.getElementById('editUserId').value = user.id;
+      document.getElementById('editUserName').value = user.name;
+      document.getElementById('editUserEmail').value = user.email;
+      document.getElementById('editUserRole').value = (user.role || 'USER').toUpperCase();
+      document.getElementById('editUserPassword').value = '';
+      document.getElementById('editUserModal').classList.add('active');
+    }
+
+    function closeEditUserModal() {
+      document.getElementById('editUserModal').classList.remove('active');
+    }
+
+    async function submitEditUser(e) {
+      e.preventDefault();
+      const id = document.getElementById('editUserId').value;
+      const payload = {
+        name: document.getElementById('editUserName').value,
+        email: document.getElementById('editUserEmail').value,
+        role: document.getElementById('editUserRole').value,
+        password: document.getElementById('editUserPassword').value
+      };
+      try {
+        const res = await authFetch(`${API_URL}/users/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+          closeEditUserModal();
+          showToast('פרטי המשתמש עודכנו בהצלחה!');
+          loadAllData();
+        } else {
+          showToast(result.message || 'שגיאה בעדכון משתמש', 'error');
+        }
+      } catch (err) {
+        showToast('שגיאה בעדכון משתמש', 'error');
+      }
+    }
+
+    async function deleteUser(id) {
+      if (!confirm('האם למחוק משתמש זה מהמערכת?')) return;
+      try {
+        const res = await authFetch(`${API_URL}/users/${id}`, { method: 'DELETE' });
+        const json = await res.json();
+        if (res.ok && json.status === 'success') {
+          showToast('המשתמש נמחק בהצלחה');
+          loadAllData();
+        } else {
+          showToast(json.message || 'לא ניתן למחוק משתמש זה', 'error');
+        }
+      } catch (err) {
+        showToast('שגיאה במחיקת משתמש', 'error');
+      }
+    }
+
+    // Auth Modal & Login/Register Handlers
+    function openAuthModal(tab = 'login') {
+      document.getElementById('authModal').classList.add('active');
+      switchAuthTab(tab);
+      hideModalAlert();
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.remove('active');
+    }
+
+    function switchAuthTab(tab) {
+      const loginTab = document.getElementById('modalTabLogin');
+      const regTab = document.getElementById('modalTabRegister');
+      const loginForm = document.getElementById('loginForm');
+      const regForm = document.getElementById('registerForm');
+      hideModalAlert();
+
+      if (tab === 'login') {
+        loginTab.classList.add('active');
+        regTab.classList.remove('active');
+        loginForm.style.display = 'block';
+        regForm.style.display = 'none';
+      } else {
+        regTab.classList.add('active');
+        loginTab.classList.remove('active');
+        regForm.style.display = 'block';
+        loginForm.style.display = 'none';
+      }
+    }
+
+    function showModalAlert(type, text) {
+      const alertBox = document.getElementById('modalAlert');
+      alertBox.className = `alert-msg ${type}`;
+      alertBox.textContent = text;
+    }
+
+    function hideModalAlert() {
+      const alertBox = document.getElementById('modalAlert');
+      alertBox.className = 'alert-msg';
+      alertBox.textContent = '';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (data.status === 'success' && data.token) {
+          authToken = data.token;
+          currentUser = data.user;
+          localStorage.setItem('jwt_token', authToken);
+          localStorage.setItem('user_data', JSON.stringify(currentUser));
+          updateAuthUI();
+          closeAuthModal();
+          showToast(`ברוך הבא, ${currentUser.name}!`);
+          loadAllData();
+        } else {
+          showModalAlert('error', data.message || 'שגיאה בהתחברות');
+        }
+      } catch (err) {
+        showModalAlert('error', 'שגיאת רשת בחיבור לשרת');
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const role = document.getElementById('regRole').value;
+
+      try {
+        const res = await fetch(`${API_URL}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, role })
+        });
+        const data = await res.json();
+
+        if (data.status === 'success' && data.token) {
+          authToken = data.token;
+          currentUser = data.user;
+          localStorage.setItem('jwt_token', authToken);
+          localStorage.setItem('user_data', JSON.stringify(currentUser));
+          updateAuthUI();
+          closeAuthModal();
+          showToast(`החשבון נוצר בהצלחה! מחובר כ-${currentUser.name}`);
+          loadAllData();
+        } else {
+          showModalAlert('error', data.message || 'שגיאה בהרשמה');
+        }
+      } catch (err) {
+        showModalAlert('error', 'שגיאת רשת בחיבור לשרת');
+      }
+    }
+
+    function quickFillLogin(email, password) {
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = password;
+      document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+    }
+
+    async function quickLoginAdmin() {
+      try {
+        const res = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: 'idan@example.com', password: 'password123' })
+        });
+        const data = await res.json();
+        if (data.status === 'success' && data.token) {
+          authToken = data.token;
+          currentUser = data.user;
+          localStorage.setItem('jwt_token', authToken);
+          localStorage.setItem('user_data', JSON.stringify(currentUser));
+          updateAuthUI();
+          loadAllData();
+        } else {
+          openAuthModal('login');
+        }
+      } catch (e) {
+        openAuthModal('login');
+      }
+    }
+
+    function logout() {
+      authToken = '';
+      currentUser = null;
+      localStorage.removeItem('jwt_token');
+      localStorage.removeItem('user_data');
+      updateAuthUI();
+      showLockedState();
+      showToast('התנתקת מהמערכת', 'info');
+    }
+
+    function loadAllData() {
+      checkHealth();
+      checkMeshStatus();
+      if (!authToken) {
+        showLockedState();
+        return;
+      }
+      loadStats();
+      loadProducts();
+      loadUsers();
+      loadOrders();
+      loadAuditLogs();
+      if (currentTab === 'mesh') loadMicroservicesView();
+      if (currentTab === 'mcp') loadMcpHubView();
+    }
+
+    async function init() {
+      updateAuthUI();
+      checkHealth();
+      checkMeshStatus();
+      if (!authToken) {
+        await quickLoginAdmin();
+      } else {
+        loadAllData();
+      }
+    }
+
+    init();
+    setInterval(() => {
+      loadStats();
+      checkMeshStatus();
+    }, 10000);
+  </script>
+</body>
+</html>

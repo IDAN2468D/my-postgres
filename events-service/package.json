@@ -1,0 +1,16 @@
+{
+  "name": "postgres-redis-events-service",
+  "version": "3.0.0",
+  "description": "Node.js + Redis Cache & Real-Time Event Bus Microservice",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --check server.js && node --test test.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "pg": "^8.12.0",
+    "redis": "^4.6.14"
+  }
+}

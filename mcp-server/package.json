@@ -1,0 +1,16 @@
+{
+  "name": "my-postgres-mcp-server",
+  "version": "3.0.0",
+  "description": "Model Context Protocol (MCP) Server for PostgreSQL 16 & Microservices Mesh",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "stdio": "node mcp-stdio.js",
+    "test": "node --check server.js && node --check mcp-stdio.js && node --test test.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "pg": "^8.12.0"
+  }
+}

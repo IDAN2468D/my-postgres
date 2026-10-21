@@ -1,0 +1,163 @@
+name: default
+
+services:
+  # 1. PostgreSQL 16 Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: my-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-mydb}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - default_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # 2. Redis 7 In-Memory Cache & Event Bus
+  redis:
+    image: redis:7-alpine
+    container_name: my-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - app-network
+
+  # 3. Python FastAPI AI Analytics & Currency Microservice
+  analytics-service:
+    build:
+      context: ./analytics-service
+      dockerfile: Dockerfile
+    image: my-postgres-analytics:latest
+    container_name: my-analytics-service
+    restart: unless-stopped
+    environment:
+      PORT: 5002
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: ${POSTGRES_DB:-mydb}
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-password}
+    ports:
+      - "5002:5002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # 4. Node.js + Redis Real-Time Events & Cache Microservice
+  events-service:
+    build:
+      context: ./events-service
+      dockerfile: Dockerfile
+    image: my-postgres-events:latest
+    container_name: my-events-service
+    restart: unless-stopped
+    environment:
+      PORT: 5003
+      REDIS_URL: redis://redis:6379
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: ${POSTGRES_DB:-mydb}
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-password}
+    ports:
+      - "5003:5003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # 5. Model Context Protocol (MCP) Server Hub
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile
+    image: my-postgres-mcp:latest
+    container_name: my-mcp-server
+    restart: unless-stopped
+    environment:
+      PORT: 5004
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: ${POSTGRES_DB:-mydb}
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-password}
+      WEBAPP_URL: http://webapp:5001
+      ANALYTICS_URL: http://analytics-service:5002
+      EVENTS_URL: http://events-service:5003
+    ports:
+      - "5004:5004"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # 6. Java Spring Boot 3 Server (Frontend + JWT REST API + Microservices Gateway)
+  webapp:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: my-postgres-java-server:latest
+    container_name: my-webapp
+    restart: unless-stopped
+    environment:
+      PORT: 5001
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: ${POSTGRES_DB:-mydb}
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-password}
+      ANALYTICS_URL: http://analytics-service:5002
+      EVENTS_URL: http://events-service:5003
+      MCP_URL: http://mcp-server:5004
+    ports:
+      - "5001:5001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # 7. Database Web GUI (Adminer)
+  adminer:
+    image: adminer:latest
+    container_name: my-adminer
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: pepa-linha
+    ports:
+      - "8088:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    name: default_app-network
+
+volumes:
+  default_postgres_data:
+    name: default_postgres_data

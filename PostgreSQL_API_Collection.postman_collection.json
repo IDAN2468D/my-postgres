@@ -1,0 +1,281 @@
+{
+  "info": {
+    "_postman_id": "b3c8f94a-81a2-4a0b-93f8-6e5a4e521098",
+    "name": "PostgreSQL Live API (my-postgres) [JWT Secured]",
+    "description": "אוסף שאילתות Postman מלא ומאובטח ב-JWT עבור ה-REST API המחובר למסד הנתונים PostgreSQL (mydb)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001",
+      "type": "string"
+    },
+    {
+      "key": "jwtToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 1. התחברות וקבלת טוקן JWT (Login)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.token) {",
+              "    pm.collectionVariables.set('jwtToken', jsonData.token);",
+              "    console.log('JWT Token נשמר בהצלחה!', jsonData.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"idan@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "login"]
+        },
+        "description": "התחברות באמצעות אימייל וסיסמה. שומר אוטומטית את הטוקן למשתנה jwtToken באוסף"
+      }
+    },
+    {
+      "name": "🔐 2. הרשמת משתמש חדש (Register)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.token) {",
+              "    pm.collectionVariables.set('jwtToken', jsonData.token);",
+              "    console.log('JWT Token חדש נשמר:', jsonData.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"משתמש חדש\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "register"]
+        },
+        "description": "רישום משתמש חדש עם סיסמה מוצפנת BCrypt וקבלת טוקן JWT מיידי"
+      }
+    },
+    {
+      "name": "🔐 3. פרטי המשתמש המחובר (Get Me)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "me"]
+        },
+        "description": "שליפת פרטי המשתמש מתוך טוקן ה-JWT הפעיל"
+      }
+    },
+    {
+      "name": "4. בדיקת תקינות וחיבור ציבורי (Health Check)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "health"]
+        },
+        "description": "בדיקת חיבור ציבורית ללא צורך ב-JWT"
+      }
+    },
+    {
+      "name": "5. סטטיסטיקות כלליות (Stats - JWT)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/stats",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "stats"]
+        },
+        "description": "ספירת משתמשים, מוצרים, הזמנות וסך הכנסות (מוגן ב-JWT)"
+      }
+    },
+    {
+      "name": "6. קבלת כל המוצרים (Get All Products - JWT)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"]
+        },
+        "description": "שליפת כל המוצרים מטבלת products (מוגן ב-JWT)"
+      }
+    },
+    {
+      "name": "7. הוספת מוצר חדש (Create Product - JWT)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"רמקול בלוטוס נייד JBL\",\n  \"category\": \"שמע\",\n  \"price\": 450.00,\n  \"stock\": 18\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"]
+        },
+        "description": "הכנסת מוצר חדש ל-PostgreSQL (מוגן ב-JWT)"
+      }
+    },
+    {
+      "name": "8. מחיקת מוצר לפי מזהה (Delete Product - JWT)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "1"]
+        },
+        "description": "מחיקת מוצר לפי ה-ID שלו (מוגן ב-JWT)"
+      }
+    },
+    {
+      "name": "9. קבלת כל המשתמשים (Get All Users - JWT)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/users",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "users"]
+        },
+        "description": "שליפת רשימת כל המשתמשים (מוגן ב-JWT)"
+      }
+    },
+    {
+      "name": "10. קבלת כל ההזמנות עם פרטי לקוח (Get All Orders - JWT)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/orders",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "orders"]
+        },
+        "description": "שליפת הזמנות עם שמות המשתמשים שהזמינו (מוגן ב-JWT)"
+      }
+    },
+    {
+      "name": "11. יצירת הזמנה חדשה (Create Order - JWT)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 1,\n  \"totalAmount\": 450.00,\n  \"status\": \"completed\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/orders",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "orders"]
+        },
+        "description": "יצירת רשומת הזמנה חדשה (מוגן ב-JWT)"
+      }
+    }
+  ]
+}

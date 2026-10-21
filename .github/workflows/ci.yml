@@ -1,0 +1,145 @@
+name: CI Microservices Mesh Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  # 1. Java 17 Spring Boot Tests & Build
+  java-tests:
+    name: Java Spring Boot 3 (API Gateway & JWT)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run Maven Tests
+        run: mvn test -f server/pom.xml
+
+      - name: Package JAR
+        run: mvn clean package -DskipTests -f server/pom.xml
+
+      - name: Archive Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: server/target/surefire-reports/
+          retention-days: 7
+
+  # 2. Python 3.11 FastAPI Analytics Tests
+  python-tests:
+    name: Python FastAPI (AI Analytics & Currency)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r analytics-service/requirements.txt pytest httpx flake8
+
+      - name: Code Syntax Lint (flake8)
+        run: |
+          # Stop the build if there are Python syntax errors or undefined names
+          flake8 analytics-service --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Run Unit Tests (pytest)
+        run: |
+          cd analytics-service
+          pytest test_analytics.py -v
+
+  # 3. Node.js 20 Redis & Events Microservice Tests
+  node-events-tests:
+    name: Node.js 20 (Redis Cache & Event Bus)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: events-service/package.json
+
+      - name: Install Dependencies
+        run: |
+          cd events-service
+          npm install
+
+      - name: Run Syntax & Unit Tests
+        run: |
+          npm test --prefix events-service
+
+  # 4. Node.js 20 MCP Server Hub Tests
+  node-mcp-tests:
+    name: Model Context Protocol (MCP Server Hub)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: mcp-server/package.json
+
+      - name: Install Dependencies
+        run: |
+          cd mcp-server
+          npm install
+
+      - name: Run Syntax & Unit Tests
+        run: |
+          npm test --prefix mcp-server
+
+  # 5. Docker & Docker Compose Specification Verification
+  docker-validation:
+    name: Docker Compose & Container Specs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose Configuration
+        run: docker compose config
+
+  # 6. Pipeline Summary Gate
+  ci-status:
+    name: CI Pipeline Quality Gate
+    runs-on: ubuntu-latest
+    needs: [java-tests, python-tests, node-events-tests, node-mcp-tests, docker-validation]
+    if: always()
+    steps:
+      - name: Check Status of All Quality Gates
+        run: |
+          if [ "${{ needs.java-tests.result }}" != "success" ] || \
+             [ "${{ needs.python-tests.result }}" != "success" ] || \
+             [ "${{ needs.node-events-tests.result }}" != "success" ] || \
+             [ "${{ needs.node-mcp-tests.result }}" != "success" ] || \
+             [ "${{ needs.docker-validation.result }}" != "success" ]; then
+            echo "❌ One or more CI test jobs failed."
+            exit 1
+          fi
+          echo "✅ All 5 CI quality gates passed successfully!"

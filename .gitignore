@@ -1,0 +1,59 @@
+# Environment Variables
+.env
+*.env.local
+
+# IDE & Editors
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# Java / Maven
+server/target/
+target/
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Python
+analytics-service/__pycache__/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node.js
+events-service/node_modules/
+mcp-server/node_modules/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Database & Runtime Data
+postgres_data/
+*.db
+*.sqlite3
+
+# OS generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.log

@@ -1,0 +1,3 @@
+@echo off
+echo פותח את ממשק הניהול של מסד הנתונים בדפדפן...
+start http://localhost:8088
