@@ -1291,6 +1291,489 @@
       background: rgba(239, 68, 68, 0.4);
       color: #fff;
     }
+
+    /* ========================================================
+       ENTERPRISE DATA TABLE & LIVE POSTGRESQL EXPLORER STYLES
+       ======================================================== */
+    .view-controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .view-left-controls, .view-right-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .view-switcher-group {
+      display: inline-flex;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 3px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .view-switch-btn {
+      padding: 5px 12px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      border-radius: 9px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .view-switch-btn:hover {
+      color: #fff;
+    }
+
+    .view-switch-btn.active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #00dfd8;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .live-sync-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 5px 12px;
+      border-radius: 20px;
+      user-select: none;
+    }
+
+    .live-sync-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse-dot 1.8s infinite;
+    }
+
+    .auto-refresh-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 5px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .auto-refresh-toggle input {
+      accent-color: #00dfd8;
+      cursor: pointer;
+    }
+
+    /* Bento Quick Filter Pills Bar */
+    .bento-pills-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 2px 10px;
+      margin-bottom: 12px;
+      scrollbar-width: thin;
+    }
+
+    .bento-pills-bar::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .bento-pills-bar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+    }
+
+    .bento-pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .bento-pill:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #f1f5f9;
+      transform: translateY(-1px);
+    }
+
+    .bento-pill.active {
+      background: linear-gradient(135deg, rgba(0, 223, 216, 0.2), rgba(121, 40, 202, 0.2));
+      border-color: #00dfd8;
+      color: #00dfd8;
+      box-shadow: 0 0 12px rgba(0, 223, 216, 0.2);
+    }
+
+    .bento-pill .count-badge {
+      font-size: 11px;
+      padding: 1px 7px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+    }
+
+    .bento-pill.active .count-badge {
+      background: rgba(0, 223, 216, 0.3);
+      color: #fff;
+    }
+
+    /* Enterprise Table Container */
+    .enterprise-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      max-height: 520px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(11, 15, 25, 0.55);
+      position: relative;
+    }
+
+    .enterprise-table-wrap::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .enterprise-table-wrap::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 8px;
+    }
+
+    .enterprise-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+      font-size: 13.5px;
+    }
+
+    .enterprise-table th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(18, 24, 38, 0.96);
+      backdrop-filter: blur(16px);
+      padding: 12px 14px;
+      color: #94a3b8;
+      font-weight: 700;
+      font-size: 12.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+
+    .enterprise-table th:hover {
+      color: #00dfd8;
+      background: rgba(28, 36, 56, 0.96);
+    }
+
+    .enterprise-table th.sort-active {
+      color: #00dfd8;
+      border-bottom-color: #00dfd8;
+    }
+
+    .enterprise-table th .sort-arrow {
+      font-size: 10px;
+      margin-right: 4px;
+      opacity: 0.85;
+    }
+
+    .enterprise-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+      color: #f1f5f9;
+      vertical-align: middle;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+
+    .enterprise-table tr {
+      transition: background 0.15s;
+    }
+
+    .enterprise-table tr:hover td {
+      background: rgba(0, 223, 216, 0.045);
+    }
+
+    .enterprise-table tr.selected td {
+      background: rgba(121, 40, 202, 0.16);
+    }
+
+    .enterprise-table.compact td {
+      padding: 7px 12px;
+      font-size: 12.5px;
+    }
+
+    .enterprise-table.compact th {
+      padding: 8px 12px;
+      font-size: 11.5px;
+    }
+
+    .cell-id {
+      font-family: Consolas, monospace;
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+    .cell-primary {
+      font-weight: 600;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cell-num {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+    }
+
+    .micro-stock-track {
+      width: 52px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .micro-stock-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    .custom-row-checkbox {
+      width: 16px;
+      height: 16px;
+      accent-color: #00dfd8;
+      cursor: pointer;
+    }
+
+    /* Floating Bulk Actions Bar */
+    .floating-bulk-bar {
+      position: sticky;
+      bottom: 8px;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 18px;
+      border-radius: 14px;
+      background: rgba(17, 24, 39, 0.96);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 223, 216, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      margin-top: 10px;
+      animation: slideUp 0.25s ease-out;
+    }
+
+    .bulk-actions-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-bulk {
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-bulk:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .btn-bulk.danger {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .btn-bulk.danger:hover {
+      background: rgba(239, 68, 68, 0.4);
+      color: #fff;
+    }
+
+    /* Table Footer, Pagination & Metrics Summary */
+    .table-footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 12px 14px;
+      margin-top: 10px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 12.5px;
+      color: #94a3b8;
+    }
+
+    .table-summary-metrics {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .summary-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #cbd5e1;
+    }
+
+    .summary-chip strong {
+      color: #00dfd8;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-page {
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-page:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+    }
+
+    .btn-page.active {
+      background: #00dfd8;
+      border-color: #00dfd8;
+      color: #090a0f;
+      font-weight: 700;
+    }
+
+    .btn-page:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* Live PostgreSQL Record Inspector Modal */
+    .inspector-card {
+      max-width: 680px;
+      width: 100%;
+    }
+
+    .inspector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 12px;
+    }
+
+    .inspector-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .inspector-field {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .inspector-field label {
+      display: block;
+      font-size: 11.5px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .inspector-field .val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      word-break: break-all;
+    }
+
+    .code-preview-box {
+      width: 100%;
+      max-height: 240px;
+      overflow-y: auto;
+      padding: 12px;
+      border-radius: 12px;
+      background: #05070e;
+      border: 1px solid rgba(0, 223, 216, 0.25);
+      color: #a5f3fc;
+      font-family: Consolas, monospace;
+      font-size: 12.5px;
+      direction: ltr;
+      text-align: left;
+      white-space: pre-wrap;
+    }
+
   </style>
 </head>
 <body>
@@ -1594,15 +2077,25 @@
       <!-- Right Panel: Live Data View + Search/Filter + Export -->
       <div class="glass-card">
         <div class="card-head">
-          <h2>📊 ניהול נתונים חיים מ-PostgreSQL</h2>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn-outline" onclick="exportCurrentData('csv')" title="ייצוא הטבלה הנוכחית לאקסל (CSV)">
+          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <h2>📊 ניהול נתונים חיים מ-PostgreSQL 16</h2>
+            <div class="live-sync-pill" title="חיבור חי בזמן אמת ל-PostgreSQL 16 Alpine דרך Spring Boot JWT Gateway">
+              <span class="live-sync-dot"></span>
+              <span id="liveSyncStatusText">סנכרון חי פעיל</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <label class="auto-refresh-toggle" title="רענון אוטומטי של הנתונים כל 10 שניות">
+              <input type="checkbox" id="autoRefreshCheck" onchange="toggleAutoRefresh(this.checked)">
+              <span id="autoRefreshLabel">⚡ רענון חי (10ש')</span>
+            </label>
+            <button class="btn-outline" onclick="exportCurrentData('csv')" title="ייצוא הטבלה הנוכחית לאקסל (CSV עם תמיכת עברית UTF-8)">
               📥 ייצוא CSV
             </button>
             <button class="btn-outline" onclick="exportCurrentData('json')" title="ייצוא הטבלה הנוכחית ל-JSON">
               📄 ייצוא JSON
             </button>
-            <button class="btn-outline" onclick="loadAllData()">
+            <button class="btn-outline" onclick="loadAllData()" title="רענון מיידי של הנתונים">
               🔄 רענן
             </button>
           </div>
@@ -1618,9 +2111,53 @@
           <button class="tab-btn" id="tabAgents" onclick="switchTab('agents')" style="border-color: rgba(168, 85, 247, 0.5); color: #e9d5ff;">🧠 צוות סוכני AI (Multi-Agents)</button>
         </div>
 
+        <!-- View Controls & Quick Bento Pills Bar -->
+        <div class="view-controls-bar" id="viewControlsBar">
+          <div class="view-left-controls">
+            <span style="font-size: 12.5px; color: #94a3b8; font-weight: 700;">תצוגה:</span>
+            <div class="view-switcher-group">
+              <button type="button" class="view-switch-btn active" id="btnViewTable" onclick="changeDataViewMode('table')" title="טבלת נתונים ארגונית מפורטת עם מיון ועמודות">
+                <span>📋 טבלה מפורטת</span>
+              </button>
+              <button type="button" class="view-switch-btn" id="btnViewCards" onclick="changeDataViewMode('cards')" title="תצוגת כרטיסיות מודולריות">
+                <span>🗂️ כרטיסיות</span>
+              </button>
+            </div>
+            <div class="view-switcher-group" title="צפיפות שורות בטבלה">
+              <button type="button" class="view-switch-btn active" id="btnDensityComfortable" onclick="changeDataDensity('comfortable')">נוח</button>
+              <button type="button" class="view-switch-btn" id="btnDensityCompact" onclick="changeDataDensity('compact')">קומפקטי</button>
+            </div>
+          </div>
+
+          <div class="view-right-controls">
+            <span style="font-size: 12px; color: #94a3b8;">מיון לפי:</span>
+            <select class="filter-select" id="tableSortSelect" onchange="handleSortSelectChange(this.value)" style="padding: 5px 10px; font-size: 12px;">
+              <option value="id_desc">מזהה (חדש לישן) ▼</option>
+              <option value="id_asc">מזהה (ישן לחדש) ▲</option>
+              <option value="name_asc">שם (א-ת) ▲</option>
+              <option value="price_desc">מחיר (גבוה לנמוך) ▼</option>
+              <option value="price_asc">מחיר (נמוך לגבוה) ▲</option>
+              <option value="stock_asc">מלאי (נמוך לגבוה - קריטי) ▲</option>
+              <option value="stock_desc">מלאי (גבוה לנמוך) ▼</option>
+            </select>
+            <span style="font-size: 12px; color: #94a3b8;">עמוד:</span>
+            <select class="filter-select" id="pageSizeSelect" onchange="changePageSize(this.value)" style="padding: 5px 10px; font-size: 12px;">
+              <option value="10">10 שורות</option>
+              <option value="25">25 שורות</option>
+              <option value="50">50 שורות</option>
+              <option value="1000">הכל</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Interactive Bento Filter Pills Bar -->
+        <div class="bento-pills-bar" id="bentoPillsBar">
+          <!-- Populated dynamically per active tab -->
+        </div>
+
         <!-- Dynamic Filter Toolbar -->
         <div class="filter-toolbar" id="filterToolbar">
-          <input type="text" class="search-input" id="searchInput" placeholder="🔍 חיפוש חופשי..." oninput="applyCurrentTabFilters()">
+          <input type="text" class="search-input" id="searchInput" placeholder="🔍 חיפוש חופשי בכל העמודות..." oninput="applyCurrentTabFilters()">
 
           <!-- Products Specific Filters -->
           <select class="filter-select" id="productCategoryFilter" onchange="applyCurrentTabFilters()">
@@ -1665,8 +2202,46 @@
           </select>
         </div>
 
-        <div class="products-list" id="dataList">
+        <!-- Main Data Presentation Area -->
+        <div id="dataList" style="position: relative;">
           <div class="loading-spin">טוען נתונים ממסד הנתונים...</div>
+        </div>
+
+        <!-- Floating Bulk Action Toolbar (Appears when >= 1 rows are selected) -->
+        <div class="floating-bulk-bar" id="floatingBulkBar" style="display: none;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <strong style="color: #00dfd8; font-size: 13.5px;" id="bulkSelectedCountText">נבחרו 0 פריטים</strong>
+            <span style="font-size: 12px; color: #94a3b8;">• פעולות אצווה ב-PostgreSQL</span>
+          </div>
+          <div class="bulk-actions-group">
+            <button type="button" class="btn-bulk" id="bulkAddStockBtn" onclick="bulkAddStockToSelected()" style="color: #6ee7b7;">
+              <span>📦 הוסף +10 למלאי</span>
+            </button>
+            <button type="button" class="btn-bulk" onclick="exportSelectedRows('csv')">
+              <span>📥 ייצא נבחרים (CSV)</span>
+            </button>
+            <button type="button" class="btn-bulk danger" onclick="bulkDeleteSelected()">
+              <span>🗑️ מחק נבחרים</span>
+            </button>
+            <button type="button" class="btn-bulk" onclick="clearRowSelection()" style="color: #94a3b8;">
+              <span>✖️ בטל בחירה</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table Footer Bar: Metrics Summary & Interactive Pagination -->
+        <div class="table-footer-bar" id="tableFooterBar">
+          <div class="table-summary-metrics" id="tableSummaryMetrics">
+            <span class="summary-chip">סה״כ רשומות בסינון: <strong id="sumFilteredCount">0</strong></span>
+            <span class="summary-chip" id="sumExtraMetric1Wrap"><span id="sumExtraMetric1Label">שווי מלאי:</span> <strong id="sumExtraMetric1Val">₪0.00</strong></span>
+            <span class="summary-chip" id="sumExtraMetric2Wrap"><span id="sumExtraMetric2Label">ממוצע:</span> <strong id="sumExtraMetric2Val">₪0.00</strong></span>
+          </div>
+          <div class="pagination-controls" id="tablePaginationControls">
+            <span style="font-size: 12px; color: #94a3b8;" id="paginationRangeText">מציג 1-10 מתוך 0</span>
+            <button type="button" class="btn-page" id="btnPagePrev" onclick="changeTablePage(-1)">‹ הקודם</button>
+            <div id="paginationPageNumbers" style="display: flex; gap: 4px;"></div>
+            <button type="button" class="btn-page" id="btnPageNext" onclick="changeTablePage(1)">הבא ›</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1799,6 +2374,60 @@
         </div>
         <button type="submit" class="btn-submit">💾 עדכן משתמש</button>
       </form>
+    </div>
+  </div>
+
+  <!-- 4. Live PostgreSQL Record Inspector Modal -->
+  <div class="modal-overlay" id="rowInspectorModal">
+    <div class="modal-card inspector-card">
+      <button class="modal-close" onclick="closeRowInspector()">&times;</button>
+      <div class="inspector-header">
+        <div>
+          <h3 style="font-size: 19px; color: #fff; display: flex; align-items: center; gap: 8px;">
+            <span id="inspectModalIcon">📦</span>
+            <span id="inspectModalTitle">מפקח רשומה חי מ-PostgreSQL 16</span>
+          </h3>
+          <span style="font-size: 12px; color: #00dfd8; font-family: Consolas, monospace;" id="inspectModalSubtitle">Table: products • Primary Key: id = 1</span>
+        </div>
+        <span class="role-tag" id="inspectModalBadge" style="background: rgba(0, 223, 216, 0.2); color: #00dfd8; border: 1px solid rgba(0, 223, 216, 0.4);">PostgreSQL</span>
+      </div>
+
+      <div class="modal-tabs" style="margin-bottom: 14px;">
+        <button type="button" class="modal-tab-btn active" id="inspectTabFields" onclick="switchInspectorTab('fields')">📋 פרטים מובנים</button>
+        <button type="button" class="modal-tab-btn" id="inspectTabJson" onclick="switchInspectorTab('json')">🔍 Raw JSON</button>
+        <button type="button" class="modal-tab-btn" id="inspectTabAi" onclick="switchInspectorTab('ai')">✨ ניתוח AI (Gemini)</button>
+      </div>
+
+      <!-- Tab 1: Structured Grid Fields -->
+      <div id="inspectContentFields">
+        <div class="inspector-grid" id="inspectFieldsGrid">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Tab 2: Raw JSON Schema -->
+      <div id="inspectContentJson" style="display: none;">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 6px;">
+          <button type="button" class="btn-outline" style="padding: 4px 10px; font-size: 11.5px;" onclick="copyInspectorJson()">📋 העתק JSON</button>
+        </div>
+        <pre class="code-preview-box" id="inspectRawJsonBox"></pre>
+      </div>
+
+      <!-- Tab 3: Gemini AI Live Analysis -->
+      <div id="inspectContentAi" style="display: none;">
+        <div style="margin-bottom: 10px; padding: 12px; border-radius: 12px; background: rgba(0, 223, 216, 0.08); border: 1px solid rgba(0, 223, 216, 0.3); font-size: 13px; color: #a5f3fc; line-height: 1.6;" id="inspectAiBox">
+          טוען ניתוח AI מאת Gemini 3.5 Flash-Lite...
+        </div>
+        <button type="button" class="btn-outline" style="width: 100%; justify-content: center;" onclick="refreshInspectorAiAnalysis()">
+          <span>🔄 בקש מ-Gemini ניתוח עסקי מחודש על רשומה זו</span>
+        </button>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 14px;">
+        <button type="button" class="btn-outline" id="btnInspectEdit" onclick="handleInspectorEditAction()">✏️ ערוך רשומה</button>
+        <button type="button" class="btn-del" id="btnInspectDelete" onclick="handleInspectorDeleteAction()">🗑️ מחק</button>
+        <button type="button" class="btn-outline" onclick="closeRowInspector()">סגור</button>
+      </div>
     </div>
   </div>
 
@@ -2175,8 +2804,571 @@
       }
     }
 
-    // Renderers with Instant Filtering
+    // ========================================================
+    // Enhanced Live PostgreSQL Data Explorer State & Handlers
+    // ========================================================
+    let dataViewMode = localStorage.getItem('data_view_mode') || 'table'; // 'table' or 'cards'
+    let dataDensity = localStorage.getItem('data_density') || 'comfortable'; // 'comfortable' or 'compact'
+    let sortField = 'id';
+    let sortAsc = false;
+    let currentPage = 1;
+    let pageSize = 10;
+    let selectedRowIds = new Set();
+    let activeBentoPill = 'ALL';
+    let autoRefreshTimer = null;
+    let autoRefreshSeconds = 10;
+    let inspectedRecord = null;
+    let inspectedType = 'product';
+
+    function changeDataViewMode(mode) {
+      dataViewMode = mode;
+      localStorage.setItem('data_view_mode', mode);
+      const bTable = document.getElementById('btnViewTable');
+      const bCards = document.getElementById('btnViewCards');
+      if (bTable) bTable.classList.toggle('active', mode === 'table');
+      if (bCards) bCards.classList.toggle('active', mode === 'cards');
+      applyCurrentTabFilters();
+    }
+
+    function changeDataDensity(density) {
+      dataDensity = density;
+      localStorage.setItem('data_density', density);
+      const bComf = document.getElementById('btnDensityComfortable');
+      const bComp = document.getElementById('btnDensityCompact');
+      if (bComf) bComf.classList.toggle('active', density === 'comfortable');
+      if (bComp) bComp.classList.toggle('active', density === 'compact');
+      applyCurrentTabFilters();
+    }
+
+    function handleSortSelectChange(val) {
+      const parts = val.split('_');
+      sortField = parts[0];
+      sortAsc = parts[1] === 'asc';
+      applyCurrentTabFilters();
+    }
+
+    function setTableSorting(field) {
+      if (sortField === field) {
+        sortAsc = !sortAsc;
+      } else {
+        sortField = field;
+        sortAsc = true;
+      }
+      const select = document.getElementById('tableSortSelect');
+      const targetVal = `${field}_${sortAsc ? 'asc' : 'desc'}`;
+      if (select) {
+        for (let opt of select.options) {
+          if (opt.value === targetVal) {
+            select.value = targetVal;
+            break;
+          }
+        }
+      }
+      applyCurrentTabFilters();
+    }
+
+    function changePageSize(val) {
+      pageSize = parseInt(val, 10) || 10;
+      currentPage = 1;
+      applyCurrentTabFilters();
+    }
+
+    function changeTablePage(delta) {
+      currentPage = Math.max(1, currentPage + delta);
+      applyCurrentTabFilters();
+    }
+
+    function setTablePage(page) {
+      currentPage = page;
+      applyCurrentTabFilters();
+    }
+
+    function selectBentoPill(pillVal) {
+      activeBentoPill = pillVal;
+      currentPage = 1;
+      renderBentoPills();
+      applyCurrentTabFilters();
+    }
+
+    function toggleAutoRefresh(enabled) {
+      const label = document.getElementById('autoRefreshLabel');
+      if (autoRefreshTimer) {
+        clearInterval(autoRefreshTimer);
+        autoRefreshTimer = null;
+      }
+      if (enabled) {
+        autoRefreshSeconds = 10;
+        if (label) label.textContent = `⚡ רענון חי (${autoRefreshSeconds}ש')`;
+        autoRefreshTimer = setInterval(() => {
+          autoRefreshSeconds--;
+          if (autoRefreshSeconds <= 0) {
+            autoRefreshSeconds = 10;
+            loadAllData(true);
+          }
+          if (label) label.textContent = `⚡ רענון חי (${autoRefreshSeconds}ש')`;
+        }, 1000);
+      } else {
+        if (label) label.textContent = `⚡ רענון חי (10ש')`;
+      }
+    }
+
+    function toggleRowSelect(id, checked) {
+      if (checked) {
+        selectedRowIds.add(id);
+      } else {
+        selectedRowIds.delete(id);
+      }
+      updateFloatingBulkBar();
+      const tr = document.getElementById(`row-${currentTab}-${id}`);
+      if (tr) tr.classList.toggle('selected', checked);
+    }
+
+    function toggleSelectAllRows(checked, allIds) {
+      if (checked) {
+        allIds.forEach(id => selectedRowIds.add(id));
+      } else {
+        selectedRowIds.clear();
+      }
+      updateFloatingBulkBar();
+      applyCurrentTabFilters();
+    }
+
+    function updateFloatingBulkBar() {
+      const bar = document.getElementById('floatingBulkBar');
+      const countText = document.getElementById('bulkSelectedCountText');
+      const addStockBtn = document.getElementById('bulkAddStockBtn');
+      if (!bar) return;
+      if (selectedRowIds.size > 0 && (currentTab === 'products' || currentTab === 'orders' || currentTab === 'users')) {
+        bar.style.display = 'flex';
+        if (countText) countText.textContent = `נבחרו ${selectedRowIds.size} פריטים`;
+        if (addStockBtn) {
+          addStockBtn.style.display = currentTab === 'products' ? 'inline-flex' : 'none';
+        }
+      } else {
+        bar.style.display = 'none';
+      }
+    }
+
+    function clearRowSelection() {
+      selectedRowIds.clear();
+      updateFloatingBulkBar();
+      applyCurrentTabFilters();
+    }
+
+    async function bulkDeleteSelected() {
+      if (!selectedRowIds.size) return;
+      if (!confirm(`האם למחוק ${selectedRowIds.size} פריטים שנבחרו ממסד הנתונים?`)) return;
+      const ids = Array.from(selectedRowIds);
+      let successCount = 0;
+      for (const id of ids) {
+        try {
+          const res = await authFetch(`${API_URL}/${currentTab}/${id}`, { method: 'DELETE' });
+          if (res.ok) successCount++;
+        } catch (_) {}
+      }
+      showToast(`נמחקו בהצלחה ${successCount} מתוך ${ids.length} פריטים שנבחרו`);
+      selectedRowIds.clear();
+      updateFloatingBulkBar();
+      loadAllData();
+    }
+
+    async function bulkAddStockToSelected() {
+      if (!selectedRowIds.size || currentTab !== 'products') return;
+      const ids = Array.from(selectedRowIds);
+      let successCount = 0;
+      for (const id of ids) {
+        try {
+          const res = await authFetch(`${API_URL}/products/${id}/stock`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ delta: 10 })
+          });
+          if (res.ok) successCount++;
+        } catch (_) {}
+      }
+      showToast(`המלאי של ${successCount} מוצרים עודכן ב-+10 יחידות!`);
+      selectedRowIds.clear();
+      updateFloatingBulkBar();
+      loadAllData();
+    }
+
+    function exportSelectedRows(format) {
+      let data = [];
+      if (currentTab === 'products') data = cachedProducts;
+      else if (currentTab === 'orders') data = cachedOrders;
+      else if (currentTab === 'users') data = cachedUsers;
+      else if (currentTab === 'audit') data = cachedAuditLogs;
+
+      const selectedData = data.filter(item => selectedRowIds.has(item.id));
+      if (!selectedData.length) {
+        showToast('לא נבחרו פריטים לייצוא', 'info');
+        return;
+      }
+
+      const filename = `postgres_${currentTab}_selected_${new Date().toISOString().slice(0,10)}`;
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(selectedData, null, 2)], { type: 'application/json;charset=utf-8' });
+        downloadBlob(blob, `${filename}.json`);
+        showToast(`יוצאו ${selectedData.length} פריטים נבחרים ל-JSON`);
+      } else {
+        const headers = Object.keys(selectedData[0]);
+        const csvRows = [
+          headers.join(','),
+          ...selectedData.map(row => headers.map(fieldName => {
+            const val = row[fieldName] === null || row[fieldName] === undefined ? '' : String(row[fieldName]);
+            return `"${val.replace(/"/g, '""')}"`;
+          }).join(','))
+        ];
+        const blob = new Blob(['\uFEFF' + csvRows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+        downloadBlob(blob, `${filename}.csv`);
+        showToast(`יוצאו ${selectedData.length} פריטים נבחרים ל-CSV (Excel)`);
+      }
+    }
+
+    function openRowInspector(record, type) {
+      inspectedRecord = record;
+      inspectedType = type;
+      const modal = document.getElementById('rowInspectorModal');
+      const icon = document.getElementById('inspectModalIcon');
+      const title = document.getElementById('inspectModalTitle');
+      const subtitle = document.getElementById('inspectModalSubtitle');
+      const badge = document.getElementById('inspectModalBadge');
+      const editBtn = document.getElementById('btnInspectEdit');
+      const delBtn = document.getElementById('btnInspectDelete');
+
+      switchInspectorTab('fields');
+
+      if (type === 'product') {
+        icon.textContent = '📦';
+        title.textContent = `מוצר: ${record.name || 'ללא שם'}`;
+        subtitle.textContent = `Table: mydb.products • ID: #${record.id} • קטגוריה: ${record.category || 'כללי'}`;
+        badge.textContent = `מלאי: ${record.stock} יח'`;
+        editBtn.style.display = 'inline-flex';
+        delBtn.style.display = 'inline-flex';
+
+        const totalEquity = Number(record.price || 0) * Number(record.stock || 0);
+        document.getElementById('inspectFieldsGrid').innerHTML = `
+          <div class="inspector-field"><label>מזהה (ID)</label><div class="val cell-id">#${record.id}</div></div>
+          <div class="inspector-field"><label>שם המוצר</label><div class="val">${record.name}</div></div>
+          <div class="inspector-field"><label>קטגוריה</label><div class="val">${record.category}</div></div>
+          <div class="inspector-field"><label>מחיר ליחידה</label><div class="val" style="color:#34d399;">₪${Number(record.price).toFixed(2)}</div></div>
+          <div class="inspector-field"><label>כמות במלאי</label><div class="val ${record.stock <= 5 ? 'low-stock-badge' : ''}">${record.stock} יחידות</div></div>
+          <div class="inspector-field"><label>שווי מלאי כולל</label><div class="val" style="color:#00dfd8;">₪${totalEquity.toLocaleString('he-IL', {minimumFractionDigits: 2})}</div></div>
+          <div class="inspector-field"><label>סטטוס בריאות מלאי</label><div class="val">${record.stock === 0 ? '❌ אזל מהמלאי' : record.stock <= 5 ? '⚠️ מלאי קריטי' : '✅ מלאי תקין'}</div></div>
+          <div class="inspector-field"><label>נוצר במסד הנתונים</label><div class="val" style="font-size: 12px; color:#94a3b8;">${record.created_at ? new Date(record.created_at).toLocaleString('he-IL') : 'רשומת מפתח'}</div></div>
+        `;
+        document.getElementById('inspectAiBox').innerHTML = `
+          ✨ <strong>ניתוח Gemini 3.5 Flash-Lite:</strong><br/>
+          המוצר <strong>"${record.name}"</strong> מתומחר ב-<strong>₪${Number(record.price).toFixed(2)}</strong> עם יתרת מלאי של <strong>${record.stock} יחידות</strong> (נכס בשווי ₪${totalEquity.toLocaleString()}).<br/>
+          ${record.stock <= 5 ? '⚠️ <em>התראת רכש:</em> מלאי נמוך! מומלץ להריץ את סוכן הרכש (InventoryRestockAgent) להזמנת 20 יחידות נוספות.' : '✅ רמת המלאי תקינה. מומלץ לבחון באנדל שיווקי עם מוצרים מקבילים בקטגוריה.'}
+        `;
+      } else if (type === 'order') {
+        icon.textContent = '🛍️';
+        title.textContent = `הזמנה #${record.id}`;
+        subtitle.textContent = `Table: mydb.orders • User ID: #${record.user_id || 'אורח'}`;
+        badge.textContent = `סטטוס: ${record.status || 'pending'}`;
+        editBtn.style.display = 'none';
+        delBtn.style.display = 'inline-flex';
+
+        document.getElementById('inspectFieldsGrid').innerHTML = `
+          <div class="inspector-field"><label>מזהה הזמנה</label><div class="val cell-id">#${record.id}</div></div>
+          <div class="inspector-field"><label>שם לקוח</label><div class="val">${record.user_name || 'לקוח אורח'}</div></div>
+          <div class="inspector-field"><label>אימייל לקוח</label><div class="val">${record.user_email || 'לא צוין'}</div></div>
+          <div class="inspector-field"><label>מוצר שהוזמן</label><div class="val">${record.product_name || 'כללי'} (x${record.quantity || 1})</div></div>
+          <div class="inspector-field"><label>סה״כ לתשלום</label><div class="val" style="color:#34d399;">₪${Number(record.total_amount).toFixed(2)}</div></div>
+          <div class="inspector-field"><label>סטטוס נוכחי</label><div class="val">${record.status || 'pending'}</div></div>
+          <div class="inspector-field"><label>תאריך ביצוע</label><div class="val" style="font-size: 12px; color:#94a3b8;">${record.order_date ? new Date(record.order_date).toLocaleString('he-IL') : 'הזמנה פעילה'}</div></div>
+        `;
+        document.getElementById('inspectAiBox').innerHTML = `
+          ✨ <strong>ניתוח Gemini 3.5 Flash-Lite:</strong><br/>
+          הזמנה על סך <strong>₪${Number(record.total_amount).toFixed(2)}</strong> עבור <strong>${record.user_name || 'לקוח'}</strong>.<br/>
+          ${record.status === 'pending' ? '🛡️ ההזמנה ממתינה לבדיקת אשראי חוצת-מסדים (shop_db). אם היתרה מספקת, סוכן ההזמנות מקדם אותה אוטומטית ל-shipped.' : '✅ ההזמנה עברה את שלבי האימות במערכת.'}
+        `;
+      } else if (type === 'user') {
+        icon.textContent = '👤';
+        title.textContent = `משתמש: ${record.name}`;
+        subtitle.textContent = `Table: mydb.users • ID: #${record.id}`;
+        badge.textContent = `Role: ${record.role || 'USER'}`;
+        editBtn.style.display = 'inline-flex';
+        delBtn.style.display = 'inline-flex';
+
+        document.getElementById('inspectFieldsGrid').innerHTML = `
+          <div class="inspector-field"><label>מזהה משתמש</label><div class="val cell-id">#${record.id}</div></div>
+          <div class="inspector-field"><label>שם מלא</label><div class="val">${record.name}</div></div>
+          <div class="inspector-field"><label>אימייל</label><div class="val">${record.email}</div></div>
+          <div class="inspector-field"><label>הרשאה (Role)</label><div class="val"><span class="role-tag">${record.role || 'USER'}</span></div></div>
+        `;
+        document.getElementById('inspectAiBox').innerHTML = `
+          ✨ <strong>ניתוח Gemini 3.5 Flash-Lite:</strong><br/>
+          משתמש בעל הרשאת <strong>${record.role || 'USER'}</strong>. מאומת במערכת עם תוקף כניסה JWT.
+        `;
+      } else if (type === 'audit') {
+        icon.textContent = '📜';
+        title.textContent = `רשומת Audit #${record.id}`;
+        subtitle.textContent = `Table: mydb.audit_logs • Action: ${record.action}`;
+        badge.textContent = `${record.entityType || 'SYSTEM'}`;
+        editBtn.style.display = 'none';
+        delBtn.style.display = 'none';
+
+        document.getElementById('inspectFieldsGrid').innerHTML = `
+          <div class="inspector-field"><label>מזהה לוג</label><div class="val cell-id">#${record.id}</div></div>
+          <div class="inspector-field"><label>סוג פעולה</label><div class="val">${record.action}</div></div>
+          <div class="inspector-field"><label>סוג ישות</label><div class="val">${record.entityType}</div></div>
+          <div class="inspector-field"><label>בוצע ע״י</label><div class="val">${record.performedBy || 'מערכת'}</div></div>
+          <div class="inspector-field" style="grid-column: 1 / -1;"><label>פירוט הפעולה</label><div class="val">${record.details}</div></div>
+          <div class="inspector-field"><label>תאריך ושעה</label><div class="val" style="font-size: 12px; color:#94a3b8;">${record.createdAt ? new Date(record.createdAt).toLocaleString('he-IL') : ''}</div></div>
+        `;
+        document.getElementById('inspectAiBox').innerHTML = `
+          ✨ <strong>ניתוח Gemini 3.5 Flash-Lite:</strong><br/>
+          רשומת אבטחה מסוג <strong>${record.action}</strong> שבוצעה על ידי <strong>${record.performedBy || 'מערכת'}</strong> ללא חריגות הרשאה.
+        `;
+      }
+
+      document.getElementById('inspectRawJsonBox').textContent = JSON.stringify(record, null, 2);
+      modal.classList.add('active');
+    }
+
+    function closeRowInspector() {
+      const modal = document.getElementById('rowInspectorModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function switchInspectorTab(tab) {
+      const tF = document.getElementById('inspectTabFields');
+      const tJ = document.getElementById('inspectTabJson');
+      const tA = document.getElementById('inspectTabAi');
+      if (tF) tF.classList.toggle('active', tab === 'fields');
+      if (tJ) tJ.classList.toggle('active', tab === 'json');
+      if (tA) tA.classList.toggle('active', tab === 'ai');
+
+      const cF = document.getElementById('inspectContentFields');
+      const cJ = document.getElementById('inspectContentJson');
+      const cA = document.getElementById('inspectContentAi');
+      if (cF) cF.style.display = tab === 'fields' ? 'block' : 'none';
+      if (cJ) cJ.style.display = tab === 'json' ? 'block' : 'none';
+      if (cA) cA.style.display = tab === 'ai' ? 'block' : 'none';
+    }
+
+    function copyInspectorJson() {
+      if (!inspectedRecord) return;
+      navigator.clipboard.writeText(JSON.stringify(inspectedRecord, null, 2)).then(() => {
+        showToast('ה-JSON הועתק ללוח בהצלחה!');
+      });
+    }
+
+    async function refreshInspectorAiAnalysis() {
+      if (!inspectedRecord) return;
+      const box = document.getElementById('inspectAiBox');
+      box.textContent = '⏳ Gemini 3.5 Flash-Lite מנתח את הרשומה...';
+      try {
+        const prompt = `נתח את רשומת ה-${inspectedType} הבאה מ-PostgreSQL וספק המלצה עסקית ממוקדת בעברית (עד 2 משפטים):\n${JSON.stringify(inspectedRecord)}`;
+        const res = await authFetch(`${API_URL}/mesh/gemini/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        if (data && data.reply) {
+          box.innerHTML = `✨ <strong>ניתוח חי מאת ${data.model || 'Gemini 3.5 Flash-Lite'}:</strong><br/>${data.reply}`;
+        }
+      } catch (e) {
+        box.textContent = 'שגיאה בקבלת ניתוח AI';
+      }
+    }
+
+    function handleInspectorEditAction() {
+      if (!inspectedRecord) return;
+      const rec = inspectedRecord;
+      closeRowInspector();
+      if (inspectedType === 'product') openEditProductModal(rec);
+      else if (inspectedType === 'user') openEditUserModal(rec);
+    }
+
+    function handleInspectorDeleteAction() {
+      if (!inspectedRecord) return;
+      const id = inspectedRecord.id;
+      closeRowInspector();
+      if (inspectedType === 'product') deleteProduct(id);
+      else if (inspectedType === 'order') deleteOrder(id);
+      else if (inspectedType === 'user') deleteUser(id);
+    }
+
+    function sortItems(items, field, asc) {
+      return [...items].sort((a, b) => {
+        let va = a[field];
+        let vb = b[field];
+        if (typeof va === 'string') va = va.toLowerCase();
+        if (typeof vb === 'string') vb = vb.toLowerCase();
+        if (va < vb) return asc ? -1 : 1;
+        if (va > vb) return asc ? 1 : -1;
+        return 0;
+      });
+    }
+
+    function renderBentoPills() {
+      const container = document.getElementById('bentoPillsBar');
+      if (!container) return;
+
+      if (currentTab === 'products') {
+        const counts = { ALL: cachedProducts.length, LOW: 0, OUT: 0 };
+        const categories = {};
+        cachedProducts.forEach(p => {
+          const c = p.category || 'אחר';
+          categories[c] = (categories[c] || 0) + 1;
+          if (p.stock <= 0) counts.OUT++;
+          else if (p.stock <= 5) counts.LOW++;
+        });
+
+        let pillsHtml = `
+          <div class="bento-pill ${activeBentoPill === 'ALL' ? 'active' : ''}" onclick="selectBentoPill('ALL')">
+            <span>📦 הכל</span>
+            <span class="count-badge">${counts.ALL}</span>
+          </div>
+        `;
+        Object.keys(categories).forEach(cat => {
+          pillsHtml += `
+            <div class="bento-pill ${activeBentoPill === cat ? 'active' : ''}" onclick="selectBentoPill('${cat}')">
+              <span>${cat}</span>
+              <span class="count-badge">${categories[cat]}</span>
+            </div>
+          `;
+        });
+        pillsHtml += `
+          <div class="bento-pill ${activeBentoPill === 'LOW' ? 'active' : ''}" onclick="selectBentoPill('LOW')" style="border-color: rgba(245, 158, 11, 0.4); color: #fbbf24;">
+            <span>⚠️ מלאי נמוך</span>
+            <span class="count-badge">${counts.LOW}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'OUT' ? 'active' : ''}" onclick="selectBentoPill('OUT')" style="border-color: rgba(239, 68, 68, 0.4); color: #f87171;">
+            <span>❌ אזל מהמלאי</span>
+            <span class="count-badge">${counts.OUT}</span>
+          </div>
+        `;
+        container.innerHTML = pillsHtml;
+      } else if (currentTab === 'orders') {
+        const counts = { ALL: cachedOrders.length, pending: 0, shipped: 0, completed: 0, cancelled: 0 };
+        cachedOrders.forEach(o => {
+          const st = (o.status || 'pending').toLowerCase();
+          if (counts[st] !== undefined) counts[st]++;
+        });
+        container.innerHTML = `
+          <div class="bento-pill ${activeBentoPill === 'ALL' ? 'active' : ''}" onclick="selectBentoPill('ALL')">
+            <span>🛍️ הכל</span><span class="count-badge">${counts.ALL}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'pending' ? 'active' : ''}" onclick="selectBentoPill('pending')" style="color: #fbbf24;">
+            <span>⏳ ממתין</span><span class="count-badge">${counts.pending}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'shipped' ? 'active' : ''}" onclick="selectBentoPill('shipped')" style="color: #60a5fa;">
+            <span>🚚 נשלח</span><span class="count-badge">${counts.shipped}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'completed' ? 'active' : ''}" onclick="selectBentoPill('completed')" style="color: #34d399;">
+            <span>✅ הושלם</span><span class="count-badge">${counts.completed}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'cancelled' ? 'active' : ''}" onclick="selectBentoPill('cancelled')" style="color: #f87171;">
+            <span>❌ בוטל</span><span class="count-badge">${counts.cancelled}</span>
+          </div>
+        `;
+      } else if (currentTab === 'users') {
+        const counts = { ALL: cachedUsers.length, ADMIN: 0, EDITOR: 0, USER: 0 };
+        cachedUsers.forEach(u => {
+          const r = (u.role || 'USER').toUpperCase();
+          if (counts[r] !== undefined) counts[r]++;
+        });
+        container.innerHTML = `
+          <div class="bento-pill ${activeBentoPill === 'ALL' ? 'active' : ''}" onclick="selectBentoPill('ALL')">
+            <span>👥 הכל</span><span class="count-badge">${counts.ALL}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'ADMIN' ? 'active' : ''}" onclick="selectBentoPill('ADMIN')">
+            <span>👑 ADMIN</span><span class="count-badge">${counts.ADMIN}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'EDITOR' ? 'active' : ''}" onclick="selectBentoPill('EDITOR')">
+            <span>✏️ EDITOR</span><span class="count-badge">${counts.EDITOR}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'USER' ? 'active' : ''}" onclick="selectBentoPill('USER')">
+            <span>👤 USER</span><span class="count-badge">${counts.USER}</span>
+          </div>
+        `;
+      } else if (currentTab === 'audit') {
+        const counts = { ALL: cachedAuditLogs.length, PRODUCT: 0, ORDER: 0, USER: 0, AUTH: 0, AGENT: 0 };
+        cachedAuditLogs.forEach(a => {
+          const e = (a.entityType || 'SYSTEM').toUpperCase();
+          if (counts[e] !== undefined) counts[e]++;
+        });
+        container.innerHTML = `
+          <div class="bento-pill ${activeBentoPill === 'ALL' ? 'active' : ''}" onclick="selectBentoPill('ALL')">
+            <span>📜 הכל</span><span class="count-badge">${counts.ALL}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'PRODUCT' ? 'active' : ''}" onclick="selectBentoPill('PRODUCT')">
+            <span>📦 מוצרים</span><span class="count-badge">${counts.PRODUCT}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'ORDER' ? 'active' : ''}" onclick="selectBentoPill('ORDER')">
+            <span>🛍️ הזמנות</span><span class="count-badge">${counts.ORDER}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'USER' ? 'active' : ''}" onclick="selectBentoPill('USER')">
+            <span>👤 משתמשים</span><span class="count-badge">${counts.USER}</span>
+          </div>
+          <div class="bento-pill ${activeBentoPill === 'AUTH' ? 'active' : ''}" onclick="selectBentoPill('AUTH')">
+            <span>🔐 אבטחה</span><span class="count-badge">${counts.AUTH}</span>
+          </div>
+        `;
+      } else {
+        container.innerHTML = '';
+      }
+    }
+
+    function updateSummaryAndPagination(totalItems, extra1Label, extra1Val, extra2Label, extra2Val) {
+      const footer = document.getElementById('tableFooterBar');
+      if (!footer) return;
+      if (currentTab === 'mesh' || currentTab === 'mcp' || currentTab === 'agents') {
+        footer.style.display = 'none';
+        return;
+      }
+      footer.style.display = 'flex';
+      const fCount = document.getElementById('sumFilteredCount');
+      if (fCount) fCount.textContent = totalItems;
+      const l1 = document.getElementById('sumExtraMetric1Label');
+      const v1 = document.getElementById('sumExtraMetric1Val');
+      const l2 = document.getElementById('sumExtraMetric2Label');
+      const v2 = document.getElementById('sumExtraMetric2Val');
+      if (l1) l1.textContent = extra1Label || '';
+      if (v1) v1.textContent = extra1Val || '';
+      if (l2) l2.textContent = extra2Label || '';
+      if (v2) v2.textContent = extra2Val || '';
+
+      const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const startIndex = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+      const endIndex = Math.min(totalItems, currentPage * pageSize);
+      const rangeEl = document.getElementById('paginationRangeText');
+      if (rangeEl) {
+        rangeEl.textContent = totalItems === 0 ? 'אין רשומות' : `מציג ${startIndex}-${endIndex} מתוך ${totalItems} (עמוד ${currentPage}/${totalPages})`;
+      }
+
+      const prevBtn = document.getElementById('btnPagePrev');
+      const nextBtn = document.getElementById('btnPageNext');
+      if (prevBtn) prevBtn.disabled = currentPage <= 1;
+      if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+      const pagesBox = document.getElementById('paginationPageNumbers');
+      if (pagesBox) {
+        let pagesHtml = '';
+        const maxButtons = 5;
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+        if (endPage - startPage < maxButtons - 1) {
+          startPage = Math.max(1, endPage - maxButtons + 1);
+        }
+        for (let p = startPage; p <= endPage; p++) {
+          pagesHtml += `<button type="button" class="btn-page ${p === currentPage ? 'active' : ''}" onclick="setTablePage(${p})">${p}</button>`;
+        }
+        pagesBox.innerHTML = pagesHtml;
+      }
+    }
+
+    // Renderers with Instant Filtering, Sorting, Pagination and View Mode Switch
     function applyCurrentTabFilters() {
+      renderBentoPills();
+      updateFloatingBulkBar();
       if (currentTab === 'products') renderProductsList();
       else if (currentTab === 'orders') renderOrdersList();
       else if (currentTab === 'users') renderUsersList();
@@ -2189,47 +3381,154 @@
       const cat = document.getElementById('productCategoryFilter').value;
       const lowOnly = document.getElementById('lowStockOnlyCheck').checked;
 
-      const filtered = cachedProducts.filter(p => {
+      let filtered = cachedProducts.filter(p => {
         if (q && !(p.name || '').toLowerCase().includes(q) && !(p.category || '').toLowerCase().includes(q)) return false;
         if (cat !== 'ALL' && p.category !== cat) return false;
         if (lowOnly && p.stock > 5) return false;
+
+        // Bento Pill Filter
+        if (activeBentoPill === 'LOW' && p.stock > 5) return false;
+        if (activeBentoPill === 'OUT' && p.stock > 0) return false;
+        if (activeBentoPill !== 'ALL' && activeBentoPill !== 'LOW' && activeBentoPill !== 'OUT' && p.category !== activeBentoPill) return false;
+
         return true;
       });
+
+      // Sort
+      filtered = sortItems(filtered, sortField, sortAsc);
+
+      // Metrics Summary
+      const totalInvVal = filtered.reduce((acc, p) => acc + (Number(p.price || 0) * Number(p.stock || 0)), 0);
+      const totalUnits = filtered.reduce((acc, p) => acc + Number(p.stock || 0), 0);
+      const avgPrice = filtered.length ? (filtered.reduce((acc, p) => acc + Number(p.price || 0), 0) / filtered.length) : 0;
+      updateSummaryAndPagination(
+        filtered.length,
+        'שווי מלאי כולל:',
+        `₪${totalInvVal.toLocaleString('he-IL', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+        'מחיר ממוצע:',
+        `₪${avgPrice.toFixed(2)}`
+      );
 
       if (filtered.length === 0) {
         list.innerHTML = '<div class="loading-spin">לא נמצאו מוצרים התואמים לסינון</div>';
         return;
       }
 
-      list.innerHTML = filtered.map(p => {
-        let stockBadge = '';
-        if (p.stock === 0) {
-          stockBadge = `<span class="out-stock-badge">❌ אזל מהמלאי</span>`;
-        } else if (p.stock <= 5) {
-          stockBadge = `<span class="low-stock-badge">⚠️ מלאי נמוך (${p.stock})</span>`;
-        }
-        return `
-          <div class="product-row">
-            <div class="prod-info">
-              <h4>
-                <span>${p.name}</span>
-                ${stockBadge}
-              </h4>
-              <span class="prod-category">${p.category}</span>
-            </div>
-            <div class="prod-meta">
-              <div class="stock-control" title="עדכון מלאי מהיר">
-                <button class="btn-stock-step" onclick="quickAdjustStock(${p.id}, -1)">-</button>
-                <span>מלאי: <strong>${p.stock}</strong></span>
-                <button class="btn-stock-step" onclick="quickAdjustStock(${p.id}, 1)">+</button>
-              </div>
-              <span class="prod-price">₪${Number(p.price).toFixed(2)}</span>
-              <button class="btn-edit" onclick='openEditProductModal(${JSON.stringify(p)})'>✏️ ערוך</button>
-              <button class="btn-del" onclick="deleteProduct(${p.id})">🗑️ מחק</button>
-            </div>
+      // Pagination slice
+      const startIndex = (currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIndex, startIndex + pageSize);
+      const pageIds = pageItems.map(p => p.id);
+      const allSelected = pageIds.length > 0 && pageIds.every(id => selectedRowIds.has(id));
+
+      if (dataViewMode === 'table') {
+        const sortIndicator = (f) => (sortField === f ? `<span class="sort-arrow">${sortAsc ? '▲' : '▼'}</span>` : '');
+        list.innerHTML = `
+          <div class="enterprise-table-wrap">
+            <table class="enterprise-table ${dataDensity}">
+              <thead>
+                <tr>
+                  <th style="width: 40px; text-align: center;">
+                    <input type="checkbox" class="custom-row-checkbox" ${allSelected ? 'checked' : ''} onchange="toggleSelectAllRows(this.checked, [${pageIds.join(',')}])" title="בחר הכל בעמוד זה">
+                  </th>
+                  <th onclick="setTableSorting('id')" class="${sortField === 'id' ? 'sort-active' : ''}">ID ${sortIndicator('id')}</th>
+                  <th onclick="setTableSorting('name')" class="${sortField === 'name' ? 'sort-active' : ''}">שם המוצר ${sortIndicator('name')}</th>
+                  <th onclick="setTableSorting('category')" class="${sortField === 'category' ? 'sort-active' : ''}">קטגוריה ${sortIndicator('category')}</th>
+                  <th onclick="setTableSorting('price')" class="${sortField === 'price' ? 'sort-active' : ''}">מחיר (₪) ${sortIndicator('price')}</th>
+                  <th onclick="setTableSorting('stock')" class="${sortField === 'stock' ? 'sort-active' : ''}">מלאי ${sortIndicator('stock')}</th>
+                  <th>שווי במלאי</th>
+                  <th style="text-align: center;">פעולות</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${pageItems.map(p => {
+                  const isChecked = selectedRowIds.has(p.id);
+                  const equity = Number(p.price || 0) * Number(p.stock || 0);
+                  const stockHealthColor = p.stock === 0 ? '#ef4444' : (p.stock <= 5 ? '#f59e0b' : '#10b981');
+                  const stockPct = Math.min(100, Math.round((Number(p.stock || 0) / 40) * 100));
+                  return `
+                    <tr id="row-products-${p.id}" class="${isChecked ? 'selected' : ''}" ondblclick='openRowInspector(${JSON.stringify(p)}, "product")'>
+                      <td style="text-align: center;" onclick="event.stopPropagation();">
+                        <input type="checkbox" class="custom-row-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleRowSelect(${p.id}, this.checked)">
+                      </td>
+                      <td class="cell-id">#${p.id}</td>
+                      <td>
+                        <div class="cell-primary">
+                          <span>${p.name}</span>
+                          ${p.stock === 0 ? '<span class="out-stock-badge">אזל</span>' : (p.stock <= 5 ? `<span class="low-stock-badge">${p.stock}</span>` : '')}
+                        </div>
+                      </td>
+                      <td><span class="prod-category">${p.category}</span></td>
+                      <td class="cell-num" style="color: #34d399;">₪${Number(p.price).toFixed(2)}</td>
+                      <td>
+                        <div style="display: flex; flex-direction: column;">
+                          <div style="display: flex; align-items: center; gap: 6px;">
+                            <span class="cell-num" style="font-weight: 700;">${p.stock}</span>
+                            <button type="button" class="btn-stock-step" onclick="event.stopPropagation(); quickAdjustStock(${p.id}, -1)">-</button>
+                            <button type="button" class="btn-stock-step" onclick="event.stopPropagation(); quickAdjustStock(${p.id}, 1)">+</button>
+                          </div>
+                          <div class="micro-stock-track">
+                            <div class="micro-stock-fill" style="width: ${stockPct}%; background: ${stockHealthColor};"></div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="cell-num" style="color: #00dfd8;">₪${equity.toLocaleString('he-IL', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                      <td style="text-align: center;">
+                        <div style="display: flex; gap: 6px; justify-content: center;">
+                          <button type="button" class="btn-outline" style="padding: 4px 8px; font-size: 11.5px;" onclick='event.stopPropagation(); openRowInspector(${JSON.stringify(p)}, "product")' title="סקור רשומה מלאה מ-PostgreSQL">👁️</button>
+                          <button type="button" class="btn-edit" onclick='event.stopPropagation(); openEditProductModal(${JSON.stringify(p)})'>✏️</button>
+                          <button type="button" class="btn-del" onclick="event.stopPropagation(); deleteProduct(${p.id})">🗑️</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
           </div>
         `;
-      }).join('');
+      } else {
+        // Cards View
+        list.innerHTML = `
+          <div class="products-list">
+            ${pageItems.map(p => {
+              const isChecked = selectedRowIds.has(p.id);
+              let stockBadge = '';
+              if (p.stock === 0) stockBadge = `<span class="out-stock-badge">❌ אזל מהמלאי</span>`;
+              else if (p.stock <= 5) stockBadge = `<span class="low-stock-badge">⚠️ מלאי נמוך (${p.stock})</span>`;
+              const equity = Number(p.price || 0) * Number(p.stock || 0);
+
+              return `
+                <div class="product-row ${isChecked ? 'selected' : ''}" ondblclick='openRowInspector(${JSON.stringify(p)}, "product")'>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <input type="checkbox" class="custom-row-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleRowSelect(${p.id}, this.checked)">
+                    <div class="prod-info">
+                      <h4>
+                        <span>${p.name}</span>
+                        ${stockBadge}
+                      </h4>
+                      <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                        <span class="prod-category">${p.category}</span>
+                        <span style="font-size: 12px; color: #00dfd8; font-family: 'Outfit', sans-serif;">שווי: ₪${equity.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="prod-meta">
+                    <div class="stock-control" title="עדכון מלאי מהיר">
+                      <button type="button" class="btn-stock-step" onclick="quickAdjustStock(${p.id}, -1)">-</button>
+                      <span>מלאי: <strong>${p.stock}</strong></span>
+                      <button type="button" class="btn-stock-step" onclick="quickAdjustStock(${p.id}, 1)">+</button>
+                    </div>
+                    <span class="prod-price">₪${Number(p.price).toFixed(2)}</span>
+                    <button type="button" class="btn-outline" style="padding: 5px 9px;" onclick='openRowInspector(${JSON.stringify(p)}, "product")'>👁️ פרטים</button>
+                    <button type="button" class="btn-edit" onclick='openEditProductModal(${JSON.stringify(p)})'>✏️ ערוך</button>
+                    <button type="button" class="btn-del" onclick="deleteProduct(${p.id})">🗑️ מחק</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
     }
 
     function renderOrdersList() {
@@ -2237,8 +3536,9 @@
       const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
       const stFilter = document.getElementById('orderStatusFilter').value;
 
-      const filtered = cachedOrders.filter(o => {
+      let filtered = cachedOrders.filter(o => {
         if (stFilter !== 'ALL' && (o.status || '').toLowerCase() !== stFilter.toLowerCase()) return false;
+        if (activeBentoPill !== 'ALL' && (o.status || '').toLowerCase() !== activeBentoPill.toLowerCase()) return false;
         if (q) {
           const hay = `${o.id} ${o.user_name || ''} ${o.product_name || ''} ${o.status || ''}`.toLowerCase();
           if (!hay.includes(q)) return false;
@@ -2246,36 +3546,130 @@
         return true;
       });
 
+      // Sort
+      filtered = sortItems(filtered, sortField === 'price' ? 'total_amount' : sortField, sortAsc);
+
+      // Metrics Summary
+      const totalRev = filtered.filter(o => (o.status || '').toLowerCase() !== 'cancelled').reduce((acc, o) => acc + Number(o.total_amount || 0), 0);
+      const activeCount = filtered.filter(o => (o.status || '').toLowerCase() !== 'cancelled').length;
+      const aov = activeCount ? totalRev / activeCount : 0;
+      updateSummaryAndPagination(
+        filtered.length,
+        'מחזור פעיל:',
+        `₪${totalRev.toLocaleString('he-IL', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+        'סל ממוצע (AOV):',
+        `₪${aov.toFixed(2)}`
+      );
+
       if (filtered.length === 0) {
         list.innerHTML = '<div class="loading-spin">לא נמצאו הזמנות התואמות לסינון</div>';
         return;
       }
 
-      list.innerHTML = filtered.map(o => {
-        const st = (o.status || 'pending').toLowerCase();
-        const dateStr = o.order_date ? new Date(o.order_date).toLocaleString('he-IL') : '';
-        return `
-          <div class="product-row">
-            <div class="prod-info">
-              <h4>
-                <span>הזמנה #${o.id} — ${o.user_name || 'לקוח אורח'}</span>
-                <span class="prod-category">📦 ${o.product_name || 'הזמנה כללית'} (x${o.quantity || 1})</span>
-              </h4>
-              <span style="font-size: 12px; color: #94a3b8;">🕒 ${dateStr} ${o.user_email ? '• ' + o.user_email : ''}</span>
-            </div>
-            <div class="prod-meta">
-              <select class="order-status-select ${st}" onchange="updateOrderStatus(${o.id}, this.value)">
-                <option value="pending" ${st === 'pending' ? 'selected' : ''}>⏳ ממתין (Pending)</option>
-                <option value="shipped" ${st === 'shipped' ? 'selected' : ''}>🚚 נשלח (Shipped)</option>
-                <option value="completed" ${st === 'completed' ? 'selected' : ''}>✅ הושלם (Completed)</option>
-                <option value="cancelled" ${st === 'cancelled' ? 'selected' : ''}>❌ בוטל (Cancelled)</option>
-              </select>
-              <span class="prod-price">₪${Number(o.total_amount).toFixed(2)}</span>
-              <button class="btn-del" onclick="deleteOrder(${o.id})">🗑️ מחק</button>
-            </div>
+      const startIndex = (currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIndex, startIndex + pageSize);
+      const pageIds = pageItems.map(o => o.id);
+      const allSelected = pageIds.length > 0 && pageIds.every(id => selectedRowIds.has(id));
+
+      if (dataViewMode === 'table') {
+        const sortIndicator = (f) => (sortField === f ? `<span class="sort-arrow">${sortAsc ? '▲' : '▼'}</span>` : '');
+        list.innerHTML = `
+          <div class="enterprise-table-wrap">
+            <table class="enterprise-table ${dataDensity}">
+              <thead>
+                <tr>
+                  <th style="width: 40px; text-align: center;">
+                    <input type="checkbox" class="custom-row-checkbox" ${allSelected ? 'checked' : ''} onchange="toggleSelectAllRows(this.checked, [${pageIds.join(',')}])">
+                  </th>
+                  <th onclick="setTableSorting('id')" class="${sortField === 'id' ? 'sort-active' : ''}">ID ${sortIndicator('id')}</th>
+                  <th>לקוח</th>
+                  <th>מוצר וכמות</th>
+                  <th onclick="setTableSorting('total_amount')" class="${sortField === 'total_amount' ? 'sort-active' : ''}">סכום הזמנה ${sortIndicator('total_amount')}</th>
+                  <th onclick="setTableSorting('status')" class="${sortField === 'status' ? 'sort-active' : ''}">סטטוס ${sortIndicator('status')}</th>
+                  <th onclick="setTableSorting('order_date')" class="${sortField === 'order_date' ? 'sort-active' : ''}">תאריך ${sortIndicator('order_date')}</th>
+                  <th style="text-align: center;">פעולות</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${pageItems.map(o => {
+                  const isChecked = selectedRowIds.has(o.id);
+                  const st = (o.status || 'pending').toLowerCase();
+                  const dateStr = o.order_date ? new Date(o.order_date).toLocaleDateString('he-IL') : '';
+                  return `
+                    <tr id="row-orders-${o.id}" class="${isChecked ? 'selected' : ''}" ondblclick='openRowInspector(${JSON.stringify(o)}, "order")'>
+                      <td style="text-align: center;" onclick="event.stopPropagation();">
+                        <input type="checkbox" class="custom-row-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleRowSelect(${o.id}, this.checked)">
+                      </td>
+                      <td class="cell-id">#${o.id}</td>
+                      <td>
+                        <div class="cell-primary">
+                          <span>${o.user_name || 'לקוח אורח'}</span>
+                        </div>
+                        <span style="font-size: 11.5px; color: #94a3b8;">${o.user_email || ''}</span>
+                      </td>
+                      <td>
+                        <span class="prod-category">📦 ${o.product_name || 'כללי'} (x${o.quantity || 1})</span>
+                      </td>
+                      <td class="cell-num" style="color: #34d399; font-size: 15px;">₪${Number(o.total_amount).toFixed(2)}</td>
+                      <td onclick="event.stopPropagation();">
+                        <select class="order-status-select ${st}" onchange="updateOrderStatus(${o.id}, this.value)">
+                          <option value="pending" ${st === 'pending' ? 'selected' : ''}>⏳ ממתין (pending)</option>
+                          <option value="shipped" ${st === 'shipped' ? 'selected' : ''}>🚚 נשלח (shipped)</option>
+                          <option value="completed" ${st === 'completed' ? 'selected' : ''}>✅ הושלם (completed)</option>
+                          <option value="cancelled" ${st === 'cancelled' ? 'selected' : ''}>❌ בוטל (cancelled)</option>
+                        </select>
+                      </td>
+                      <td style="font-size: 12px; color: #94a3b8;">${dateStr}</td>
+                      <td style="text-align: center;">
+                        <div style="display: flex; gap: 6px; justify-content: center;">
+                          <button type="button" class="btn-outline" style="padding: 4px 8px; font-size: 11.5px;" onclick='event.stopPropagation(); openRowInspector(${JSON.stringify(o)}, "order")' title="סקור הזמנה זו">👁️</button>
+                          <button type="button" class="btn-del" onclick="event.stopPropagation(); deleteOrder(${o.id})">🗑️</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
           </div>
         `;
-      }).join('');
+      } else {
+        // Cards View
+        list.innerHTML = `
+          <div class="products-list">
+            ${pageItems.map(o => {
+              const isChecked = selectedRowIds.has(o.id);
+              const st = (o.status || 'pending').toLowerCase();
+              const dateStr = o.order_date ? new Date(o.order_date).toLocaleString('he-IL') : '';
+              return `
+                <div class="product-row ${isChecked ? 'selected' : ''}" ondblclick='openRowInspector(${JSON.stringify(o)}, "order")'>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <input type="checkbox" class="custom-row-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleRowSelect(${o.id}, this.checked)">
+                    <div class="prod-info">
+                      <h4>
+                        <span>הזמנה #${o.id} — ${o.user_name || 'לקוח אורח'}</span>
+                        <span class="prod-category">📦 ${o.product_name || 'הזמנה כללית'} (x${o.quantity || 1})</span>
+                      </h4>
+                      <span style="font-size: 12px; color: #94a3b8;">🕒 ${dateStr} ${o.user_email ? '• ' + o.user_email : ''}</span>
+                    </div>
+                  </div>
+                  <div class="prod-meta">
+                    <select class="order-status-select ${st}" onchange="updateOrderStatus(${o.id}, this.value)">
+                      <option value="pending" ${st === 'pending' ? 'selected' : ''}>⏳ ממתין (Pending)</option>
+                      <option value="shipped" ${st === 'shipped' ? 'selected' : ''}>🚚 נשלח (Shipped)</option>
+                      <option value="completed" ${st === 'completed' ? 'selected' : ''}>✅ הושלם (Completed)</option>
+                      <option value="cancelled" ${st === 'cancelled' ? 'selected' : ''}>❌ בוטל (Cancelled)</option>
+                    </select>
+                    <span class="prod-price">₪${Number(o.total_amount).toFixed(2)}</span>
+                    <button type="button" class="btn-outline" style="padding: 5px 9px;" onclick='openRowInspector(${JSON.stringify(o)}, "order")'>👁️ פרטים</button>
+                    <button type="button" class="btn-del" onclick="deleteOrder(${o.id})">🗑️ מחק</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
     }
 
     function renderUsersList() {
@@ -2283,33 +3677,98 @@
       const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
       const roleFilter = document.getElementById('userRoleFilter').value;
 
-      const filtered = cachedUsers.filter(u => {
+      let filtered = cachedUsers.filter(u => {
         if (roleFilter !== 'ALL' && (u.role || 'USER').toUpperCase() !== roleFilter) return false;
+        if (activeBentoPill !== 'ALL' && (u.role || 'USER').toUpperCase() !== activeBentoPill) return false;
         if (q && !(u.name || '').toLowerCase().includes(q) && !(u.email || '').toLowerCase().includes(q)) return false;
         return true;
       });
+
+      filtered = sortItems(filtered, sortField, sortAsc);
+      updateSummaryAndPagination(filtered.length, 'משתמשים פעילים:', `${filtered.length}`, 'הרשאות:', 'ADMIN / EDITOR / USER');
 
       if (filtered.length === 0) {
         list.innerHTML = '<div class="loading-spin">לא נמצאו משתמשים התואמים לסינון</div>';
         return;
       }
 
-      list.innerHTML = filtered.map(u => `
-        <div class="product-row">
-          <div class="prod-info">
-            <h4>
-              <span>${u.name}</span>
-              <span class="role-tag">${u.role || 'USER'}</span>
-            </h4>
-            <span class="prod-category">${u.email}</span>
+      const startIndex = (currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIndex, startIndex + pageSize);
+      const pageIds = pageItems.map(u => u.id);
+      const allSelected = pageIds.length > 0 && pageIds.every(id => selectedRowIds.has(id));
+
+      if (dataViewMode === 'table') {
+        const sortIndicator = (f) => (sortField === f ? `<span class="sort-arrow">${sortAsc ? '▲' : '▼'}</span>` : '');
+        list.innerHTML = `
+          <div class="enterprise-table-wrap">
+            <table class="enterprise-table ${dataDensity}">
+              <thead>
+                <tr>
+                  <th style="width: 40px; text-align: center;">
+                    <input type="checkbox" class="custom-row-checkbox" ${allSelected ? 'checked' : ''} onchange="toggleSelectAllRows(this.checked, [${pageIds.join(',')}])">
+                  </th>
+                  <th onclick="setTableSorting('id')" class="${sortField === 'id' ? 'sort-active' : ''}">ID ${sortIndicator('id')}</th>
+                  <th onclick="setTableSorting('name')" class="${sortField === 'name' ? 'sort-active' : ''}">שם מלא ${sortIndicator('name')}</th>
+                  <th onclick="setTableSorting('email')" class="${sortField === 'email' ? 'sort-active' : ''}">כתובת אימייל ${sortIndicator('email')}</th>
+                  <th onclick="setTableSorting('role')" class="${sortField === 'role' ? 'sort-active' : ''}">הרשאה (Role) ${sortIndicator('role')}</th>
+                  <th style="text-align: center;">פעולות</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${pageItems.map(u => {
+                  const isChecked = selectedRowIds.has(u.id);
+                  return `
+                    <tr id="row-users-${u.id}" class="${isChecked ? 'selected' : ''}" ondblclick='openRowInspector(${JSON.stringify(u)}, "user")'>
+                      <td style="text-align: center;" onclick="event.stopPropagation();">
+                        <input type="checkbox" class="custom-row-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleRowSelect(${u.id}, this.checked)">
+                      </td>
+                      <td class="cell-id">#${u.id}</td>
+                      <td class="cell-primary"><span>${u.name}</span></td>
+                      <td style="color: #cbd5e1;">${u.email}</td>
+                      <td><span class="role-tag">${u.role || 'USER'}</span></td>
+                      <td style="text-align: center;">
+                        <div style="display: flex; gap: 6px; justify-content: center;">
+                          <button type="button" class="btn-outline" style="padding: 4px 8px; font-size: 11.5px;" onclick='event.stopPropagation(); openRowInspector(${JSON.stringify(u)}, "user")'>👁️</button>
+                          <button type="button" class="btn-edit" onclick='event.stopPropagation(); openEditUserModal(${JSON.stringify(u)})'>✏️</button>
+                          <button type="button" class="btn-del" onclick="event.stopPropagation(); deleteUser(${u.id})">🗑️</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
           </div>
-          <div class="prod-meta">
-            <span style="font-size: 13px; color: #94a3b8;">ID: #${u.id}</span>
-            <button class="btn-edit" onclick='openEditUserModal(${JSON.stringify(u)})'>✏️ ערוך</button>
-            <button class="btn-del" onclick="deleteUser(${u.id})">🗑️ מחק</button>
+        `;
+      } else {
+        list.innerHTML = `
+          <div class="products-list">
+            ${pageItems.map(u => {
+              const isChecked = selectedRowIds.has(u.id);
+              return `
+                <div class="product-row ${isChecked ? 'selected' : ''}" ondblclick='openRowInspector(${JSON.stringify(u)}, "user")'>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <input type="checkbox" class="custom-row-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleRowSelect(${u.id}, this.checked)">
+                    <div class="prod-info">
+                      <h4>
+                        <span>${u.name}</span>
+                        <span class="role-tag">${u.role || 'USER'}</span>
+                      </h4>
+                      <span class="prod-category">${u.email}</span>
+                    </div>
+                  </div>
+                  <div class="prod-meta">
+                    <span style="font-size: 13px; color: #94a3b8;">ID: #${u.id}</span>
+                    <button type="button" class="btn-outline" style="padding: 5px 9px;" onclick='openRowInspector(${JSON.stringify(u)}, "user")'>👁️ פרטים</button>
+                    <button type="button" class="btn-edit" onclick='openEditUserModal(${JSON.stringify(u)})'>✏️ ערוך</button>
+                    <button type="button" class="btn-del" onclick="deleteUser(${u.id})">🗑️ מחק</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
           </div>
-        </div>
-      `).join('');
+        `;
+      }
     }
 
     function renderAuditList() {
@@ -2317,8 +3776,9 @@
       const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
       const typeFilter = document.getElementById('auditTypeFilter').value;
 
-      const filtered = cachedAuditLogs.filter(a => {
+      let filtered = cachedAuditLogs.filter(a => {
         if (typeFilter !== 'ALL' && (a.entityType || '').toUpperCase() !== typeFilter) return false;
+        if (activeBentoPill !== 'ALL' && (a.entityType || '').toUpperCase() !== activeBentoPill) return false;
         if (q) {
           const hay = `${a.action || ''} ${a.details || ''} ${a.performedBy || ''}`.toLowerCase();
           if (!hay.includes(q)) return false;
@@ -2326,38 +3786,106 @@
         return true;
       });
 
+      filtered = sortItems(filtered, sortField, sortAsc);
+      updateSummaryAndPagination(filtered.length, 'סך פעולות מבוקרות:', `${filtered.length}`, 'אבטחה:', 'יומן בלתי ניתן לשינוי');
+
       if (filtered.length === 0) {
         list.innerHTML = '<div class="loading-spin">אין רשומות ביומן הפעילות</div>';
         return;
       }
 
-      list.innerHTML = filtered.map(a => {
-        const timeStr = a.createdAt ? new Date(a.createdAt).toLocaleString('he-IL') : '';
-        return `
-          <div class="product-row">
-            <div class="prod-info">
-              <h4>
-                <span class="role-tag" style="background: rgba(59, 130, 246, 0.35); border: 1px solid rgba(59,130,246,0.5);">${a.action}</span>
-                <span>${a.details}</span>
-              </h4>
-              <span style="font-size: 12px; color: #94a3b8;">👤 בוצע ע״י: <strong>${a.performedBy || 'מערכת'}</strong> • 🕒 ${timeStr}</span>
-            </div>
-            <div class="prod-meta">
-              <span class="prod-category">${a.entityType}</span>
-            </div>
+      const startIndex = (currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIndex, startIndex + pageSize);
+
+      if (dataViewMode === 'table') {
+        const sortIndicator = (f) => (sortField === f ? `<span class="sort-arrow">${sortAsc ? '▲' : '▼'}</span>` : '');
+        list.innerHTML = `
+          <div class="enterprise-table-wrap">
+            <table class="enterprise-table ${dataDensity}">
+              <thead>
+                <tr>
+                  <th onclick="setTableSorting('id')" class="${sortField === 'id' ? 'sort-active' : ''}">ID ${sortIndicator('id')}</th>
+                  <th onclick="setTableSorting('action')" class="${sortField === 'action' ? 'sort-active' : ''}">פעולה ${sortIndicator('action')}</th>
+                  <th onclick="setTableSorting('entityType')" class="${sortField === 'entityType' ? 'sort-active' : ''}">ישות ${sortIndicator('entityType')}</th>
+                  <th>פירוט הפעולה</th>
+                  <th onclick="setTableSorting('performedBy')" class="${sortField === 'performedBy' ? 'sort-active' : ''}">בוצע ע״י ${sortIndicator('performedBy')}</th>
+                  <th onclick="setTableSorting('createdAt')" class="${sortField === 'createdAt' ? 'sort-active' : ''}">תאריך ושעה ${sortIndicator('createdAt')}</th>
+                  <th style="text-align: center;">סקור</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${pageItems.map(a => {
+                  const timeStr = a.createdAt ? new Date(a.createdAt).toLocaleString('he-IL') : '';
+                  return `
+                    <tr id="row-audit-${a.id}" ondblclick='openRowInspector(${JSON.stringify(a)}, "audit")'>
+                      <td class="cell-id">#${a.id}</td>
+                      <td>
+                        <span class="role-tag" style="background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59,130,246,0.4); color: #93c5fd;">
+                          ${a.action}
+                        </span>
+                      </td>
+                      <td><span class="prod-category">${a.entityType}</span></td>
+                      <td style="color: #f1f5f9; max-width: 280px; overflow: hidden; text-overflow: ellipsis;">${a.details}</td>
+                      <td style="color: #cbd5e1; font-weight: 600;">${a.performedBy || 'מערכת'}</td>
+                      <td style="font-size: 12px; color: #94a3b8;">${timeStr}</td>
+                      <td style="text-align: center;">
+                        <button type="button" class="btn-outline" style="padding: 4px 8px; font-size: 11.5px;" onclick='openRowInspector(${JSON.stringify(a)}, "audit")'>👁️</button>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
           </div>
         `;
-      }).join('');
+      } else {
+        list.innerHTML = `
+          <div class="products-list">
+            ${pageItems.map(a => {
+              const timeStr = a.createdAt ? new Date(a.createdAt).toLocaleString('he-IL') : '';
+              return `
+                <div class="product-row" ondblclick='openRowInspector(${JSON.stringify(a)}, "audit")'>
+                  <div class="prod-info">
+                    <h4>
+                      <span class="role-tag" style="background: rgba(59, 130, 246, 0.35); border: 1px solid rgba(59,130,246,0.5);">${a.action}</span>
+                      <span>${a.details}</span>
+                    </h4>
+                    <span style="font-size: 12px; color: #94a3b8;">👤 בוצע ע״י: <strong>${a.performedBy || 'מערכת'}</strong> • 🕒 ${timeStr}</span>
+                  </div>
+                  <div class="prod-meta">
+                    <span class="prod-category">${a.entityType}</span>
+                    <button type="button" class="btn-outline" style="padding: 5px 9px;" onclick='openRowInspector(${JSON.stringify(a)}, "audit")'>👁️ סקור</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
     }
 
     // Switch Data Explorer Tab
     function switchTab(tab) {
       currentTab = tab;
+      selectedRowIds.clear();
+      activeBentoPill = 'ALL';
+      currentPage = 1;
+      updateFloatingBulkBar();
+
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('searchInput').value = '';
+      const searchInp = document.getElementById('searchInput');
+      if (searchInp) searchInp.value = '';
 
       const toolbar = document.getElementById('filterToolbar');
-      toolbar.style.display = (tab === 'mesh' || tab === 'mcp' || tab === 'agents') ? 'none' : 'flex';
+      const viewControls = document.getElementById('viewControlsBar');
+      const bentoPills = document.getElementById('bentoPillsBar');
+      const tableFooter = document.getElementById('tableFooterBar');
+
+      const isDataTab = (tab === 'products' || tab === 'orders' || tab === 'users' || tab === 'audit');
+      if (toolbar) toolbar.style.display = isDataTab ? 'flex' : 'none';
+      if (viewControls) viewControls.style.display = isDataTab ? 'flex' : 'none';
+      if (bentoPills) bentoPills.style.display = isDataTab ? 'flex' : 'none';
+      if (tableFooter) tableFooter.style.display = isDataTab ? 'flex' : 'none';
 
       // Hide all tab-specific filters first
       document.getElementById('productCategoryFilter').style.display = 'none';
@@ -2370,18 +3898,22 @@
         document.getElementById('tabProducts').classList.add('active');
         document.getElementById('productCategoryFilter').style.display = 'inline-block';
         document.getElementById('lowStockFilterWrap').style.display = 'inline-flex';
+        renderBentoPills();
         loadProducts();
       } else if (tab === 'orders') {
         document.getElementById('tabOrders').classList.add('active');
         document.getElementById('orderStatusFilter').style.display = 'inline-block';
+        renderBentoPills();
         loadOrders();
       } else if (tab === 'users') {
         document.getElementById('tabUsers').classList.add('active');
         document.getElementById('userRoleFilter').style.display = 'inline-block';
+        renderBentoPills();
         loadUsers();
       } else if (tab === 'audit') {
         document.getElementById('tabAudit').classList.add('active');
         document.getElementById('auditTypeFilter').style.display = 'inline-block';
+        renderBentoPills();
         loadAuditLogs();
       } else if (tab === 'mesh') {
         document.getElementById('tabMesh').classList.add('active');
