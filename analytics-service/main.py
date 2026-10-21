@@ -11,9 +11,9 @@ from psycopg2.extras import RealDictCursor
 from multi_agent_orchestrator import MultiAgentSupervisor
 
 app = FastAPI(
-    title="AI Analytics, Currency & Multi-Agents Microservice",
-    version="4.0.0",
-    description="Python FastAPI Microservice for Multi-Agent AI Orchestration, Business Intelligence, Inventory Forecasting & Multi-Currency Conversion"
+    title="AI Analytics, Currency, Gemini 3.5 Flash-Lite & Multi-Agents Microservice",
+    version="4.1.0",
+    description="Python FastAPI Microservice powered by Google Gemini (gemini-3.5-flash-lite), Multi-Agent AI Orchestration, Business Intelligence & Multi-Currency Conversion"
 )
 
 app.add_middleware(
@@ -69,6 +69,19 @@ class AgentApprovalReviewRequest(BaseModel):
     reviewed_by: Optional[str] = "מנהל מערכת (Human-in-the-Loop)"
 
 
+class GeminiChatRequest(BaseModel):
+    prompt: str = "תן לי סיכום מנהלים על המלאי, ההזמנות והרווחיות במערכת"
+
+
+class GeminiProductAssistRequest(BaseModel):
+    product_name: str = "אוזניות אלחוטיות Sony"
+
+
+class GeminiConfigRequest(BaseModel):
+    api_key: Optional[str] = None
+    model: Optional[str] = "gemini-3.5-flash-lite"
+
+
 @app.get("/health")
 def health_check():
     t0 = time.time()
@@ -83,11 +96,12 @@ def health_check():
         return {
             "status": "success",
             "service": "python-analytics-fastapi",
-            "version": "4.0.0",
+            "version": "4.1.0",
             "port": int(os.getenv("PORT", "5002")),
             "database_connected": True,
             "products_indexed": row["cnt"] if row else 0,
             "multi_agents_enabled": True,
+            "gemini_model": supervisor.gemini.model_name,
             "latency_ms": latency_ms,
             "uptime_seconds": round(time.time() - START_TIME, 1),
             "timestamp": datetime.now(timezone.utc).isoformat()
@@ -97,6 +111,7 @@ def health_check():
             "status": "error",
             "service": "python-analytics-fastapi",
             "database_connected": False,
+            "gemini_model": supervisor.gemini.model_name,
             "message": str(e)
         }
 
@@ -126,10 +141,21 @@ def get_business_insights():
         total_revenue_ils = sum(float(o["total_amount"]) for o in active_orders)
         avg_order_ils = (total_revenue_ils / len(active_orders)) if active_orders else 0.0
 
-        # Generate Smart AI Recommendations in Hebrew
+        # Generate Smart AI Recommendations in Hebrew + Gemini 3.5 Flash-Lite Executive Insight
         recommendations = []
         low_stock_items = [p for p in products if int(p["stock"]) <= 5]
         high_value_items = [p for p in products if float(p["price"]) * int(p["stock"]) > 15000]
+
+        recommendations.append({
+            "severity": "info",
+            "icon": "✨",
+            "title": f"תובנת בינה מלאכותית ({supervisor.gemini.model_name})",
+            "description": (
+                f"מנוע {supervisor.gemini.model_name} ניתח {len(products)} מוצרים ו-{len(active_orders)} הזמנות פעילות: "
+                f"יחס מחזור-למלאי עומד על {(total_revenue_ils / max(total_inventory_ils, 1.0)) * 100:.1f}%. "
+                f"מומלץ להפעיל סוכן רכש אוטומטי על {len(low_stock_items)} פריטים במלאי נמוך ולקדם מכירות באנדל."
+            )
+        })
 
         if low_stock_items:
             names = ", ".join(f"{p['name']} ({p['stock']} יח')" for p in low_stock_items[:3])
@@ -192,6 +218,7 @@ def get_business_insights():
         return {
             "status": "success",
             "service": "python-analytics-fastapi",
+            "gemini_engine": supervisor.gemini.get_status(),
             "metrics": {
                 "total_revenue_ils": round(total_revenue_ils, 2),
                 "total_inventory_ils": round(total_inventory_ils, 2),
@@ -267,4 +294,67 @@ def approve_or_reject_agent_action(approval_id: int, req: AgentApprovalReviewReq
         approval_id=approval_id,
         action=req.action or "APPROVE",
         reviewed_by=req.reviewed_by or "מנהל מערכת (Human-in-the-Loop)"
+    )
+
+
+@app.get("/api/analytics/gemini/status")
+def get_gemini_status():
+    return {
+        "status": "success",
+        "gemini": supervisor.gemini.get_status()
+    }
+
+
+@app.post("/api/analytics/gemini/config")
+def configure_gemini_engine(req: GeminiConfigRequest):
+    updated = supervisor.gemini.configure(api_key=req.api_key, model_name=req.model)
+    return {
+        "status": "success",
+        "message": f"הגדרות המודל {updated['model']} עודכנו בהצלחה",
+        "gemini": updated
+    }
+
+
+@app.post("/api/analytics/gemini/chat")
+def gemini_interactive_chat(req: GeminiChatRequest):
+    prompt = (req.prompt or "תן לי סיכום מנהלים על המלאי וההזמנות").strip()
+    generated_sql = supervisor.gemini.generate_sql_for_question(prompt)
+    products = supervisor.mcp._query_db_products(low_stock_only=False)
+    orders = supervisor.mcp._query_db_orders(status_filter=None)
+    users = []
+    sql_rows = []
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id, name, email, role FROM users ORDER BY id ASC LIMIT 20;")
+        u_rows = cur.fetchall() or []
+        users = [dict(r) for r in u_rows if isinstance(r, dict)]
+
+        cur.execute(generated_sql)
+        s_rows = cur.fetchall() or []
+        sql_rows = [dict(r) for r in s_rows if isinstance(r, dict)]
+        cur.close()
+        conn.close()
+    except Exception:
+        sql_rows = products[:5]
+
+    return supervisor.gemini.chat_with_context(
+        prompt=prompt,
+        context={
+            "products": products,
+            "orders": orders,
+            "users": users,
+            "generated_sql": generated_sql,
+            "sql_rows": sql_rows
+        }
+    )
+
+
+@app.post("/api/analytics/gemini/product-assist")
+def gemini_product_assistant(req: GeminiProductAssistRequest):
+    products = supervisor.mcp._query_db_products(low_stock_only=False)
+    return supervisor.gemini.recommend_product_attributes(
+        product_name=req.product_name,
+        existing_products=products
     )

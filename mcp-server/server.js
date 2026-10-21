@@ -200,6 +200,22 @@ const MCP_TOOLS = [
       properties: {}
     },
     sampleArgs: {}
+  },
+  {
+    name: 'ask_gemini_flash_lite',
+    title: 'שאילתת AI חכמה עם Gemini 3.5 Flash-Lite ונתוני PostgreSQL חיים',
+    description: 'Ask Google Gemini (gemini-3.5-flash-lite) any business, inventory, order, or SQL question in Hebrew with live PostgreSQL context.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        prompt: {
+          type: 'string',
+          description: 'Natural language question in Hebrew for Gemini 3.5 Flash-Lite'
+        }
+      },
+      required: ['prompt']
+    },
+    sampleArgs: { prompt: 'תן לי סיכום מנהלים על המלאי הקריטי, ההזמנות הפעילות והמוצר הרווחי ביותר' }
   }
 ];
 
@@ -531,6 +547,22 @@ async function executeMcpTool(toolName, args = {}) {
           executionMs: Number((performance.now() - t0).toFixed(2))
         };
       }
+    }
+
+    case 'ask_gemini_flash_lite': {
+      const prompt = String(args.prompt || 'תן לי ניתוח מלא של המלאי וההזמנות במסד הנתונים').trim();
+      const r = await fetch(`${ANALYTICS_URL}/api/analytics/gemini/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await r.json();
+      return {
+        tool: toolName,
+        model: data.model || 'gemini-3.5-flash-lite',
+        geminiResponse: data,
+        executionMs: Number((performance.now() - t0).toFixed(2))
+      };
     }
 
     default:

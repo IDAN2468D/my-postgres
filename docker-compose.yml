@@ -58,6 +58,8 @@ services:
       PGDATABASE: ${POSTGRES_DB:-mydb}
       PGUSER: ${POSTGRES_USER:-postgres}
       PGPASSWORD: ${POSTGRES_PASSWORD:-password}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.5-flash-lite}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     ports:
       - "5002:5002"
     depends_on:
@@ -110,6 +112,7 @@ services:
       WEBAPP_URL: http://my-webapp:5001
       ANALYTICS_URL: http://my-analytics-service:5002
       EVENTS_URL: http://my-events-service:5003
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.5-flash-lite}
     ports:
       - "5004:5004"
     depends_on:

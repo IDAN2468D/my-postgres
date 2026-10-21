@@ -27,6 +27,7 @@ class TestAnalyticsService(unittest.TestCase):
     def setUp(self):
         self.client = TestClient(app)
         supervisor.mcp._rpc_unreachable_until = time.time() + 3600
+        supervisor.gemini._cloud_unreachable_until = time.time() + 3600
 
     def test_exchange_rates_structure(self):
         self.assertIn("ILS", EXCHANGE_RATES)
@@ -54,6 +55,7 @@ class TestAnalyticsService(unittest.TestCase):
         self.assertEqual(data["service"], "python-analytics-fastapi")
         self.assertTrue(data["database_connected"])
         self.assertTrue(data["multi_agents_enabled"])
+        self.assertEqual(data["gemini_model"], "gemini-3.5-flash-lite")
         self.assertEqual(data["products_indexed"], 12)
 
     @patch("main.get_db_connection")
@@ -109,6 +111,8 @@ class TestAnalyticsService(unittest.TestCase):
         self.assertEqual(data["status"], "success")
         self.assertIn("metrics", data)
         self.assertIn("recommendations", data)
+        self.assertIn("gemini_engine", data)
+        self.assertEqual(data["gemini_engine"]["model"], "gemini-3.5-flash-lite")
         self.assertIn("currencies", data)
         self.assertEqual(data["metrics"]["active_orders_count"], 1)
         self.assertEqual(data["metrics"]["low_stock_count"], 1)
@@ -149,6 +153,8 @@ class TestAnalyticsService(unittest.TestCase):
         run_data = run_resp.json()
         self.assertEqual(run_data["status"], "success")
         self.assertIn("InventoryRestockAgent", run_data["active_agents"])
+        self.assertIn("gemini_synthesis", run_data)
+        self.assertEqual(run_data["gemini_synthesis"]["model"], "gemini-3.5-flash-lite")
         self.assertGreaterEqual(len(run_data["agent_steps"]), 1)
         self.assertGreaterEqual(len(run_data["pending_approvals"]), 1)
 
@@ -164,6 +170,35 @@ class TestAnalyticsService(unittest.TestCase):
         approve_data = approve_resp.json()
         self.assertEqual(approve_data["status"], "success")
         self.assertEqual(approve_data["decision"], "APPROVED")
+
+    @patch("main.get_db_connection")
+    def test_gemini_flash_lite_endpoints(self, mock_get_db):
+        mock_get_db.side_effect = Exception("Offline DB mode - use fallback")
+
+        status_resp = self.client.get("/api/analytics/gemini/status")
+        self.assertEqual(status_resp.status_code, 200)
+        self.assertEqual(status_resp.json()["gemini"]["model"], "gemini-3.5-flash-lite")
+
+        chat_resp = self.client.post(
+            "/api/analytics/gemini/chat",
+            json={"prompt": "אילו מוצרים נמצאים במלאי נמוך ומה שווי המלאי?"}
+        )
+        self.assertEqual(chat_resp.status_code, 200)
+        chat_data = chat_resp.json()
+        self.assertEqual(chat_data["status"], "success")
+        self.assertEqual(chat_data["model"], "gemini-3.5-flash-lite")
+        self.assertIn("SELECT", chat_data["generated_sql"])
+
+        assist_resp = self.client.post(
+            "/api/analytics/gemini/product-assist",
+            json={"product_name": "אוזניות גיימינג Sony Pro"}
+        )
+        self.assertEqual(assist_resp.status_code, 200)
+        assist_data = assist_resp.json()
+        self.assertEqual(assist_data["status"], "success")
+        self.assertEqual(assist_data["model"], "gemini-3.5-flash-lite")
+        self.assertEqual(assist_data["recommended_category"], "שמע")
+        self.assertGreater(assist_data["recommended_price"], 0)
 
 
 if __name__ == "__main__":

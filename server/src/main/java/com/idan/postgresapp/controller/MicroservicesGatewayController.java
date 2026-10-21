@@ -190,6 +190,47 @@ public class MicroservicesGatewayController {
         }
     }
 
+    @GetMapping("/gemini/status")
+    public ResponseEntity<Object> getGeminiStatus() {
+        return forwardGet(analyticsUrl + "/api/analytics/gemini/status");
+    }
+
+    @PostMapping("/gemini/config")
+    public ResponseEntity<Object> updateGeminiConfig(@RequestBody Map<String, Object> body) {
+        try {
+            String model = String.valueOf(body.getOrDefault("model", "gemini-3.5-flash-lite"));
+            auditLogService.log("GEMINI_CONFIG_UPDATE", "AI", null, "עודכנה תצורת מודל Gemini: " + model);
+            String json = objectMapper.writeValueAsString(body);
+            return forwardPost(analyticsUrl + "/api/analytics/gemini/config", json);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("status", "error", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/gemini/chat")
+    public ResponseEntity<Object> geminiChat(@RequestBody Map<String, Object> body) {
+        try {
+            String prompt = String.valueOf(body.getOrDefault("prompt", ""));
+            auditLogService.log("GEMINI_AI_CHAT", "AI", null, "שאילתת Gemini 3.5 Flash-Lite: " + prompt);
+            String json = objectMapper.writeValueAsString(body);
+            return forwardPost(analyticsUrl + "/api/analytics/gemini/chat", json);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("status", "error", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/gemini/product-assist")
+    public ResponseEntity<Object> geminiProductAssist(@RequestBody Map<String, Object> body) {
+        try {
+            String productName = String.valueOf(body.getOrDefault("product_name", ""));
+            auditLogService.log("GEMINI_PRODUCT_ASSIST", "PRODUCT", null, "המלצת תמחור וקטגוריה מ-Gemini 3.5 Flash-Lite עבור: " + productName);
+            String json = objectMapper.writeValueAsString(body);
+            return forwardPost(analyticsUrl + "/api/analytics/gemini/product-assist", json);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("status", "error", "message", e.getMessage()));
+        }
+    }
+
     private ResponseEntity<Object> forwardGet(String targetUrl) {
         try {
             HttpRequest req = HttpRequest.newBuilder()

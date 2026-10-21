@@ -33,7 +33,7 @@ function validateSqlHelper(rawSql) {
   return withoutTrailingSemicolon;
 }
 
-test('MCP v4.0 Tools Schema Validation (12 Tools)', () => {
+test('MCP v4.0 Tools Schema Validation (13 Tools including Gemini 3.5 Flash-Lite)', () => {
   const expectedTools = [
     'postgres_query_readonly',
     'get_system_mesh_health',
@@ -46,13 +46,14 @@ test('MCP v4.0 Tools Schema Validation (12 Tools)', () => {
     'list_or_filter_orders',
     'update_order_workflow_status',
     'cross_db_customer_profile',
-    'list_pending_agent_approvals'
+    'list_pending_agent_approvals',
+    'ask_gemini_flash_lite'
   ];
 
-  assert.equal(expectedTools.length, 12);
+  assert.equal(expectedTools.length, 13);
 
   if (serverExports && Array.isArray(serverExports.MCP_TOOLS)) {
-    assert.equal(serverExports.MCP_TOOLS.length, 12);
+    assert.equal(serverExports.MCP_TOOLS.length, 13);
     const actualNames = serverExports.MCP_TOOLS.map(t => t.name);
     assert.deepEqual(actualNames, expectedTools);
   } else {

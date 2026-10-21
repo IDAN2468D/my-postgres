@@ -1309,9 +1309,9 @@
       <div class="brand">
         <h1>
           <span>לוח בקרה | PostgreSQL & Multi-Agent AI Mesh ✨</span>
-          <span class="version-pill">v4.0 MULTI-AGENTS</span>
+          <span class="version-pill">v4.1 GEMINI 3.5 FLASH-LITE</span>
         </h1>
-        <p>ארכיטקטורת מיקרו-סרביסים וצוות סוכני AI: <code>Spring Boot 3</code> • <code>Python Multi-Agents</code> • <code>Node.js + Redis 7</code> • <code>MCP Server (12 Tools)</code> 🔐</p>
+        <p>ארכיטקטורת מיקרו-סרביסים ובינה מלאכותית: <code>Gemini 3.5 Flash-Lite</code> • <code>Spring Boot 3</code> • <code>Python Multi-Agents</code> • <code>Redis 7</code> • <code>MCP (13 Tools)</code> 🔐</p>
       </div>
 
       <div class="header-actions">
@@ -1490,7 +1490,11 @@
           </div>
           <div class="form-group">
             <label>שם המוצר</label>
-            <input type="text" id="pName" placeholder="למשל: אוזניות גיימינג אלחוטיות" required>
+            <input type="text" id="pName" placeholder="למשל: אוזניות גיימינג אלחוטיות Sony" required>
+            <button type="button" class="btn-outline" id="btnGeminiProductAssist" onclick="autoFillProductWithGemini()" style="width: 100%; margin-top: 8px; justify-content: center; border-color: rgba(168, 85, 247, 0.5); background: rgba(168, 85, 247, 0.14); color: #e9d5ff; font-size: 12.5px;">
+              <span>✨ המלצת מחיר, קטגוריה ומלאי עם Gemini 3.5 Flash-Lite</span>
+            </button>
+            <div id="geminiProductPitchBox" style="display: none; margin-top: 8px; padding: 9px 12px; border-radius: 10px; background: rgba(0, 223, 216, 0.1); border: 1px solid rgba(0, 223, 216, 0.3); color: #a5f3fc; font-size: 12px; line-height: 1.5;"></div>
           </div>
           <div class="form-group">
             <label>קטגוריה</label>
@@ -2600,7 +2604,7 @@
             <span class="jwt-pill">מחובר ל-Antigravity (mcp_config.json)</span>
           </h3>
           <p style="font-size: 13.5px; color: #cbd5e1; margin-bottom: 14px;">
-            בחר אחד מ-12 כלי ה-MCP הרשומים למטה כדי להריץ שאילתות SQL מוקשחות, להצליב נתונים בין מסדים (<code>mydb</code> + <code>shop_db</code>), או לעדכן מלאי והזמנות דרך פרוטוקול JSON-RPC 2.0:
+            בחר אחד מ-13 כלי ה-MCP הרשומים למטה (כולל <code>ask_gemini_flash_lite</code>) כדי להריץ שאילתות SQL מוקשחות, להצליב נתונים בין מסדים (<code>mydb</code> + <code>shop_db</code>), או לעדכן מלאי והזמנות דרך פרוטוקול JSON-RPC 2.0:
           </p>
 
           <div class="mcp-tools-grid">
@@ -2681,16 +2685,18 @@
       }
     }
 
-    // Multi-Agents AI Orchestrator Hub (v4.0)
+    // Multi-Agents AI Orchestrator Hub (v4.1 + Gemini 3.5 Flash-Lite)
     let latestAgentRun = null;
     let agentRunsHistory = [];
     let pendingAgentApprovals = [];
     let requireHitlApproval = true;
     let currentAgentPrompt = 'סריקה מלאה של כל המערכת: בדיקת מלאי קריטי, ביקורת אשראי הזמנות, רווחיות מט"ח וביצועי Redis';
+    let latestGeminiChatResult = null;
+    let currentGeminiStatus = { model: 'gemini-3.5-flash-lite', mode: 'SMART_CONTEXTUAL_ENGINE', api_key_configured: false };
 
     async function loadMultiAgentsView() {
       const list = document.getElementById('dataList');
-      list.innerHTML = '<div class="loading-spin">טוען נתוני Multi-Agents AI ואישורים ממתינים (Human-in-the-Loop)...</div>';
+      list.innerHTML = '<div class="loading-spin">טוען נתוני Gemini 3.5 Flash-Lite, Multi-Agents AI ואישורים ממתינים...</div>';
 
       try {
         let data = null;
@@ -2704,6 +2710,9 @@
           data = await directRes.json();
         }
 
+        if (data && data.gemini_engine) {
+          currentGeminiStatus = data.gemini_engine;
+        }
         agentRunsHistory = data.runs || [];
         pendingAgentApprovals = data.pending_approvals || [];
         if (!latestAgentRun && agentRunsHistory.length > 0) {
@@ -2719,13 +2728,66 @@
       const list = document.getElementById('dataList');
       const steps = (latestAgentRun && Array.isArray(latestAgentRun.agent_steps)) ? latestAgentRun.agent_steps : [];
       const execMs = latestAgentRun && latestAgentRun.execution_ms ? latestAgentRun.execution_ms : 0;
+      const geminiSynth = (latestAgentRun && latestAgentRun.gemini_synthesis) ? latestAgentRun.gemini_synthesis.executive_brief : null;
 
       list.innerHTML = `
+        <!-- 0. Google Gemini 3.5 Flash-Lite Co-Pilot & Text-to-SQL -->
+        <div class="hub-section" style="border-color: rgba(0, 223, 216, 0.45); background: linear-gradient(135deg, rgba(0, 223, 216, 0.06), rgba(121, 40, 202, 0.1));">
+          <h3>
+            <span>✨ מנוע בינה מלאכותית Google Gemini (<code>${currentGeminiStatus.model || 'gemini-3.5-flash-lite'}</code>) — Co-Pilot & Text-to-SQL</span>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span class="jwt-pill" style="background: rgba(0, 223, 216, 0.2); border-color: rgba(0, 223, 216, 0.45); color: #67e8f9;">
+                ⚡ ${currentGeminiStatus.model || 'gemini-3.5-flash-lite'}
+              </span>
+              <button type="button" class="btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="promptGeminiApiKeyConfig()">
+                🔑 הגדר API Key
+              </button>
+            </div>
+          </h3>
+          <p style="font-size: 13.5px; color: #cbd5e1; margin-bottom: 12px;">
+            שאל כל שאלה עסקית בעברית — <code>gemini-3.5-flash-lite</code> מתרגם את השאלה לשאילתת <code>SQL SELECT</code> מול PostgreSQL ומנתח את המלאי, ההזמנות, המשתמשים ויומן ה-Audit בזמן אמת:
+          </p>
+
+          <div class="quick-missions-grid" style="margin-bottom: 10px;">
+            <button type="button" class="mission-preset-btn" style="border-color: rgba(0, 223, 216, 0.35); background: rgba(0, 223, 216, 0.08); color: #a5f3fc;" onclick="askGeminiQuickQuestion('אילו מוצרים נמצאים במלאי קריטי ומה שווי המלאי הכולל?')">
+              💡 אילו מוצרים במלאי קריטי ומה שווי המלאי?
+            </button>
+            <button type="button" class="mission-preset-btn" style="border-color: rgba(0, 223, 216, 0.35); background: rgba(0, 223, 216, 0.08); color: #a5f3fc;" onclick="askGeminiQuickQuestion('תן לי ניתוח של ההזמנות הפעילות והלקוחות המובילים')">
+              🛍️ ניתוח הזמנות פעילות והלקוחות המובילים
+            </button>
+            <button type="button" class="mission-preset-btn" style="border-color: rgba(0, 223, 216, 0.35); background: rgba(0, 223, 216, 0.08); color: #a5f3fc;" onclick="askGeminiQuickQuestion('אילו מוצרים הכי יקרים בקטלוג ואיך לשפר את הרווחיות?')">
+              💎 אילו מוצרים הכי יקרים ואיך לשפר רווחיות?
+            </button>
+          </div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" id="geminiChatInput" class="search-input" style="flex: 1; min-width: 260px;" value="${latestGeminiChatResult ? (latestGeminiChatResult.prompt || '').replace(/"/g, '&quot;') : 'תן לי סיכום מנהלים על המלאי, ההזמנות והמוצר המוביל'}" placeholder="שאל את Gemini 3.5 Flash-Lite על הנתונים במסד...">
+            <button type="button" class="btn-auth-primary" id="askGeminiBtn" style="padding: 10px 20px;" onclick="askGeminiFromUI()">
+              <span>✨ שאל את Gemini 3.5 Flash-Lite</span>
+            </button>
+          </div>
+
+          ${latestGeminiChatResult ? `
+            <div style="margin-top: 14px; padding: 14px 16px; border-radius: 14px; background: rgba(5, 8, 17, 0.75); border: 1px solid rgba(0, 223, 216, 0.35);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                <strong style="color: #67e8f9; font-size: 13.5px;">🤖 תשובת ${latestGeminiChatResult.model || 'gemini-3.5-flash-lite'}:</strong>
+                <span style="font-size: 11.5px; color: #34d399;">זמן עיבוד: ${latestGeminiChatResult.latency_ms || 0}ms • SQL Rows: ${latestGeminiChatResult.sql_rows_count || 0}</span>
+              </div>
+              <div style="font-size: 13.5px; color: #f1f5f9; white-space: pre-line; line-height: 1.65; margin-bottom: 10px;">${latestGeminiChatResult.reply || ''}</div>
+              ${latestGeminiChatResult.generated_sql ? `
+                <div style="font-size: 12px; color: #94a3b8; font-family: Consolas, monospace; direction: ltr; text-align: left; background: rgba(0,0,0,0.45); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+                  <span style="color: #00dfd8;">Text-to-SQL:</span> ${latestGeminiChatResult.generated_sql}
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+        </div>
+
         <!-- 1. Supervisor Mission Command Center -->
         <div class="hub-section" style="border-color: rgba(168, 85, 247, 0.35);">
           <h3>
             <span>🧠 מרכז תזמור צוות סוכני AI (Supervisor + 4 Specialized Agents)</span>
-            <span class="jwt-pill" style="background: rgba(168, 85, 247, 0.25); border-color: rgba(168, 85, 247, 0.5); color: #e9d5ff;">v4.0 Multi-Agent Mesh</span>
+            <span class="jwt-pill" style="background: rgba(168, 85, 247, 0.25); border-color: rgba(168, 85, 247, 0.5); color: #e9d5ff;">v4.1 Gemini Multi-Agent Mesh</span>
           </h3>
           <p style="font-size: 13.5px; color: #cbd5e1; margin-bottom: 12px;">
             הזן משימה בשפה טבעית עבור ה-Supervisor או בחר אחת מ-4 משימות המומחים. הסוכנים מתקשרים מול שרת ה-MCP (<code>:5004</code>) ומסדי הנתונים <code>mydb</code> ו-<code>shop_db</code>:
@@ -2821,6 +2883,11 @@
               <span>🎯 <strong>משימה אחרונה:</strong> ${latestAgentRun.user_goal || ''}</span>
               <strong>${steps.length} סוכנים השתתפו</strong>
             </div>
+            ${geminiSynth ? `
+              <div style="margin-bottom: 12px; padding: 12px 15px; border-radius: 12px; background: rgba(0, 223, 216, 0.08); border: 1px solid rgba(0, 223, 216, 0.35); color: #a5f3fc; font-size: 13.5px; line-height: 1.55;">
+                <strong>✨ סינתזת מנהלים מאת <code>gemini-3.5-flash-lite</code>:</strong> ${geminiSynth}
+              </div>
+            ` : ''}
             <div class="agent-trace-grid">
               ${steps.map(step => `
                 <div class="agent-step-card">
@@ -2847,6 +2914,145 @@
       const inp = document.getElementById('agentMissionInput');
       if (inp) inp.value = presetText;
       runMultiAgentMissionFromUI();
+    }
+
+    function askGeminiQuickQuestion(questionText) {
+      const inp = document.getElementById('geminiChatInput');
+      if (inp) inp.value = questionText;
+      askGeminiFromUI();
+    }
+
+    async function askGeminiFromUI() {
+      const inp = document.getElementById('geminiChatInput');
+      const prompt = (inp && inp.value.trim()) ? inp.value.trim() : 'תן לי סיכום מנהלים על המלאי וההזמנות';
+      const btn = document.getElementById('askGeminiBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳ Gemini 3.5 Flash-Lite מנתח...</span>';
+      }
+      try {
+        const reqBody = JSON.stringify({ prompt });
+        let data = null;
+        try {
+          const res = await authFetch(`${API_URL}/mesh/gemini/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: reqBody
+          });
+          if (res.ok) data = await res.json();
+        } catch (_) {}
+
+        if (!data || data.status !== 'success') {
+          const directRes = await fetch('http://localhost:5002/api/analytics/gemini/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: reqBody
+          });
+          data = await directRes.json();
+        }
+
+        if (data && data.status === 'success') {
+          latestGeminiChatResult = data;
+          showToast(`תשובת ${data.model || 'gemini-3.5-flash-lite'} התקבלה (${data.latency_ms || 0}ms)!`);
+          renderMultiAgentsHubUI();
+        } else {
+          showToast('שגיאה בקבלת תשובה מ-Gemini', 'error');
+        }
+      } catch (e) {
+        showToast('שגיאת תקשורת מול שירות Gemini AI', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>✨ שאל את Gemini 3.5 Flash-Lite</span>';
+        }
+      }
+    }
+
+    async function autoFillProductWithGemini() {
+      const nameEl = document.getElementById('pName');
+      const productName = (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : 'אוזניות אלחוטיות Sony WH-1000XM5';
+      if (nameEl && !nameEl.value.trim()) {
+        nameEl.value = productName;
+      }
+      const btn = document.getElementById('btnGeminiProductAssist');
+      const pitchBox = document.getElementById('geminiProductPitchBox');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳ Gemini 3.5 Flash-Lite מחשב תמחור וקטגוריה...</span>';
+      }
+      try {
+        const reqBody = JSON.stringify({ product_name: productName });
+        let data = null;
+        try {
+          const res = await authFetch(`${API_URL}/mesh/gemini/product-assist`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: reqBody
+          });
+          if (res.ok) data = await res.json();
+        } catch (_) {}
+
+        if (!data || data.status !== 'success') {
+          const directRes = await fetch('http://localhost:5002/api/analytics/gemini/product-assist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: reqBody
+          });
+          data = await directRes.json();
+        }
+
+        if (data && data.status === 'success') {
+          document.getElementById('pCategory').value = data.recommended_category || 'אלקטרוניקה';
+          document.getElementById('pPrice').value = data.recommended_price || 499.90;
+          document.getElementById('pStock').value = data.recommended_stock || 20;
+          if (pitchBox) {
+            pitchBox.style.display = 'block';
+            pitchBox.innerHTML = `✨ <strong>${data.model || 'gemini-3.5-flash-lite'}:</strong> ${data.marketing_pitch || ''}`;
+          }
+          showToast(`Gemini המליץ: קטגוריה "${data.recommended_category}", מחיר ₪${data.recommended_price}`);
+        }
+      } catch (e) {
+        showToast('שגיאה בקבלת המלצת מוצר מ-Gemini', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>✨ המלצת מחיר, קטגוריה ומלאי עם Gemini 3.5 Flash-Lite</span>';
+        }
+      }
+    }
+
+    async function promptGeminiApiKeyConfig() {
+      const apiKey = prompt('הזן מפתח Google Gemini API Key (או השאר ריק לשימוש במנוע ההקשרי החכם של gemini-3.5-flash-lite):', '');
+      if (apiKey === null) return;
+      try {
+        const reqBody = JSON.stringify({ api_key: apiKey, model: 'gemini-3.5-flash-lite' });
+        let data = null;
+        try {
+          const res = await authFetch(`${API_URL}/mesh/gemini/config`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: reqBody
+          });
+          if (res.ok) data = await res.json();
+        } catch (_) {}
+
+        if (!data || data.status !== 'success') {
+          const directRes = await fetch('http://localhost:5002/api/analytics/gemini/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: reqBody
+          });
+          data = await directRes.json();
+        }
+
+        if (data && data.status === 'success') {
+          currentGeminiStatus = data.gemini || currentGeminiStatus;
+          showToast(data.message || 'הגדרות Gemini 3.5 Flash-Lite עודכנו!');
+          renderMultiAgentsHubUI();
+        }
+      } catch (e) {
+        showToast('שגיאה בעדכון הגדרות Gemini', 'error');
+      }
     }
 
     async function runMultiAgentMissionFromUI() {
